@@ -2,6 +2,8 @@
 
 Uma implementação em Go (Golang) da linguagem **BIRL** (*Bambam's "It's show time" Recursive Language*). Siga a filosofia "TREZE PORRA!" e "AQUI É BODYBUILDER" diretamente no seu terminal.
 
+Este projeto foi inspirado na [linguagem original BIRL](https://github.com/birl-language/birl-language.github.io).
+
 Esta implementação suporta a maioria das funcionalidades da especificação original com adições regionais (acentuação) e recursos como ponteiros e arrays.
 
 ## 🚀 Como Começar
