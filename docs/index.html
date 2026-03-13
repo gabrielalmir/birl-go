@@ -3,155 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIRL-GO | Documentação Monstra</title>
+    <title>BIRL-GO | AQUI É BODYBUILDER</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        :root {
+            --birl-yellow: #facc15;
+        }
+
+        h1, h2, h3, h4, .birl-font {
+            font-family: 'Big Shoulders Display', cursive;
+            text-transform: uppercase;
+        }
+
         body { font-family: 'Inter', sans-serif; }
-        code { font-family: 'Fira Code', monospace; }
+        code, pre { font-family: 'JetBrains Mono', monospace; }
+
         .birl-gradient {
             background: linear-gradient(135deg, #fef08a 0%, #facc15 100%);
+            color: #000000 !important;
         }
+
         .text-glow {
             text-shadow: 0 0 30px rgba(250, 204, 21, 0.2);
         }
+
+        .card-treino {
+            background: linear-gradient(180deg, rgba(24, 24, 27, 0.8) 0%, rgba(12, 12, 13, 1) 100%);
+            border: 1px solid rgba(250, 204, 21, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-treino:hover {
+            border-color: var(--birl-yellow);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px -10px rgba(250, 204, 21, 0.1);
+        }
+
+        /* Estilo para Código */
+        pre {
+            font-size: 1.1rem !important; /* Aumentado */
+            line-height: 1.6 !important;
+        }
+
+        .code-inline {
+            font-size: 1.05rem !important;
+            padding: 0.2rem 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            color: var(--birl-yellow);
+        }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-200 antialiased">
+<body class="bg-[#050505] text-zinc-400 antialiased selection:bg-yellow-500 selection:text-black">
 
     <!-- Navbar -->
-    <nav class="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
-        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🏋️‍♂️</span>
-                <span class="font-black text-xl tracking-tighter birl-gradient bg-clip-text text-transparent italic text-zinc-900">BIRL-GO</span>
+    <nav class="fixed top-0 w-full z-50 border-b border-zinc-900 bg-black/90 backdrop-blur-xl">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 birl-gradient rounded shadow-[0_0_20px_rgba(250,204,21,0.2)] flex items-center justify-center">
+                    <i data-lucide="dumbbell" class="w-6 h-6"></i>
+                </div>
+                <span class="text-3xl font-black tracking-tighter text-white italic">BIRL-GO</span>
             </div>
-            <div class="flex gap-6 text-sm font-medium text-zinc-400">
+            <div class="hidden md:flex gap-10 text-sm font-bold uppercase tracking-[0.15em]">
                 <a href="#inicio" class="hover:text-yellow-400 transition-colors">Início</a>
-                <a href="#sintaxe" class="hover:text-yellow-400 transition-colors">Sintaxe</a>
-                <a href="#exemplos" class="hover:text-yellow-400 transition-colors">Exemplos</a>
-                <a href="https://github.com/gabrielalmir/birl-go" class="text-white bg-zinc-800 px-3 py-1 rounded-full hover:bg-zinc-700 transition-colors">GitHub</a>
+                <a href="#tipos" class="hover:text-yellow-400 transition-colors">Tipos</a>
+                <a href="#fluxo" class="hover:text-yellow-400 transition-colors">Fluxo</a>
+                <a href="#avancado" class="hover:text-yellow-400 transition-colors">Avançado</a>
             </div>
+            <a href="https://github.com/gabrielalmir/birl-go" class="text-white hover:scale-110 transition-transform">
+                <i data-lucide="github" class="w-6 h-6"></i>
+            </a>
         </div>
     </nav>
 
     <!-- Hero -->
-    <header id="inicio" class="relative max-w-5xl mx-auto px-6 py-24 text-center overflow-hidden">
-        <!-- Radial Glow -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-yellow-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+    <header id="inicio" class="relative pt-56 pb-40 px-6 text-center">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-yellow-500/5 blur-[140px] rounded-full pointer-events-none"></div>
 
-        <h1 class="relative text-white text-6xl md:text-8xl font-black mb-6 tracking-tight italic uppercase text-glow">
-            AQUI NÃO É <span class="birl-gradient bg-clip-text text-transparent text-zinc-900">CÓDIGO</span>,<br>
-            É <span class="birl-gradient bg-clip-text text-transparent text-zinc-900">MÚSCULO</span>!
-        </h1>
-        <p class="relative text-zinc-300 text-xl max-w-2xl mx-auto mb-10 font-medium">
-            A implementação em Go da linguagem BIRL. Performance bruta, tipagem monstra e sem sedentarismo digital.<br>
-            <span class="text-sm text-zinc-500 mt-4 block">Inspirado pelo projeto original <a href="https://github.com/birl-language/birl-language.github.io" class="text-yellow-500/80 hover:text-yellow-400 underline underline-offset-4 transition-colors">birl-language</a></span>
-        </p>
-        <div class="flex flex-wrap justify-center gap-4">
-            <code class="bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-lg text-yellow-400">
-                git clone https://github.com/gabrielalmir/birl-go.git
-            </code>
+        <div class="relative max-w-5xl mx-auto">
+            <h1 class="text-white text-7xl md:text-[10rem] font-black mb-6 tracking-tighter italic leading-[1] text-glow uppercase">
+                SAI DAQUI <br>
+                <span class="birl-gradient bg-clip-text text-transparent px-4">QUE É HORA DO SHOW!</span>
+            </h1>
+            <p class="text-zinc-500 text-xl md:text-2xl max-w-3xl mx-auto mb-16 font-medium italic">
+                A implementação em Go que transforma código em puro músculo. <br class="hidden md:block">
+                Sem frescura, sem sedentarismo, apenas performance bruta.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-6">
+                <a href="https://github.com/gabrielalmir/birl-go/releases/download/v0.0.2/birl-windows-amd64.exe"
+                   class="birl-gradient px-10 py-5 rounded flex items-center gap-4 hover:brightness-110 transition-all shadow-2xl shadow-yellow-500/10">
+                    <i data-lucide="download" class="w-6 h-6"></i>
+                    <span class="text-xl font-black italic tracking-widest leading-none">DOWNLOAD WINDOWS (BORA!)</span>
+                </a>
+                <div class="bg-zinc-900 border border-zinc-800 p-[2px] rounded">
+                    <div class="bg-black px-8 py-5 rounded flex items-center gap-4">
+                        <code class="text-yellow-500 font-mono text-lg">git clone https://github.com/gabrielalmir/birl-go.git</code>
+                        <button onclick="navigator.clipboard.writeText('git clone https://github.com/gabrielalmir/birl-go.git')" class="text-zinc-600 hover:text-white transition-colors">
+                            <i data-lucide="copy" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-6 pb-24 space-y-32">
+    <main class="max-w-6xl mx-auto px-6 space-y-64 pb-60">
 
-        <!-- Guia de Sintaxe -->
-        <section id="sintaxe" class="scroll-mt-24">
-            <h2 class="text-3xl font-bold mb-12 flex items-center gap-3">
-                <span class="w-8 h-8 rounded bg-yellow-500 text-black flex items-center justify-center text-lg italic font-black">1</span>
-                Guia de Treino (Sintaxe)
-            </h2>
+        <!-- Grupos Musculares -->
+        <section id="tipos" class="scroll-mt-header">
+            <div class="flex items-center gap-6 mb-20">
+                <div class="h-[2px] flex-grow bg-gradient-to-r from-transparent to-zinc-800"></div>
+                <h3 class="text-6xl font-black text-white italic tracking-tighter">GRUPOS MUSCULARES (TIPOS)</h3>
+                <div class="h-[2px] flex-grow bg-gradient-to-l from-transparent to-zinc-800"></div>
+            </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl">
-                    <h3 class="text-yellow-500 font-bold mb-4 uppercase tracking-wider text-sm">Variáveis e Tipos</h3>
-                    <p class="text-zinc-400 mb-4">No BIRL-GO, você não declara variáveis, você define o peso do treino.</p>
-                    <pre class="bg-black/50 p-4 rounded-xl text-sm border border-zinc-800"><code><span class="text-purple-400">MONSTRO</span> peso = <span class="text-yellow-400">100</span>; <span class="text-zinc-600">// int64</span>
-<span class="text-purple-400">TRAPÉZIO</span> altura = <span class="text-yellow-400">1.85</span>; <span class="text-zinc-600">// float64</span>
-<span class="text-purple-400">FRANGO</span> nome = <span class="text-green-400">"Bambam"</span>; <span class="text-zinc-600">// string</span></code></pre>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card-treino p-10 rounded-lg">
+                    <i data-lucide="hash" class="w-10 h-10 text-yellow-500 mb-8"></i>
+                    <h4 class="text-3xl font-black text-white italic mb-4">MONSTRO</h4>
+                    <p class="text-zinc-500 text-lg leading-relaxed mb-8 italic">Inteiro de 64 bits. É o peso que você levanta no supino.</p>
+                    <div class="bg-black p-6 rounded border border-zinc-900 font-mono text-yellow-500/80">
+                        MONSTRO carga = 120;
+                    </div>
                 </div>
-
-                <div class="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl">
-                    <h3 class="text-yellow-500 font-bold mb-4 uppercase tracking-wider text-sm">Controle de Fluxo</h3>
-                    <p class="text-zinc-400 mb-4">Decisões rápidas como um drop-set.</p>
-                    <pre class="bg-black/50 p-4 rounded-xl text-sm border border-zinc-800"><code><span class="text-pink-400">ELE QUE A GENTE QUER?</span> (peso > 80)
-    <span class="text-zinc-600">// Se for monstro</span>
-<span class="text-pink-400">BIRL</span>
-<span class="text-pink-400">NÃO VAI DAR NÃO</span>
-    <span class="text-zinc-600">// Se for frango</span>
-<span class="text-pink-400">BIRL</span></code></pre>
+                <div class="card-treino p-10 rounded-lg">
+                    <i data-lucide="activity" class="w-10 h-10 text-yellow-500 mb-8"></i>
+                    <h4 class="text-3xl font-black text-white italic mb-4">TRAPÉZIO</h4>
+                    <p class="text-zinc-500 text-lg leading-relaxed mb-8 italic">Ponto flutuante. Para medir cada milímetro do trapézio.</p>
+                    <div class="bg-black p-6 rounded border border-zinc-900 font-mono text-yellow-500/80">
+                        TRAPÉZIO bf = 7.2;
+                    </div>
+                </div>
+                <div class="card-treino p-10 rounded-lg">
+                    <i data-lucide="type" class="w-10 h-10 text-yellow-500 mb-8"></i>
+                    <h4 class="text-3xl font-black text-white italic mb-4">FRANGO</h4>
+                    <p class="text-zinc-500 text-lg leading-relaxed mb-8 italic">Texto bruto. Se não for pra gritar, nem escreva.</p>
+                    <div class="bg-black p-6 rounded border border-zinc-900 font-mono text-yellow-500/80">
+                        FRANGO grito = "BIRL!";
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Recursos Avançados -->
-        <section id="exemplos" class="scroll-mt-24">
-            <h2 class="text-3xl font-bold mb-12 flex items-center gap-3">
-                <span class="w-8 h-8 rounded bg-yellow-500 text-black flex items-center justify-center text-lg italic font-black">2</span>
-                Exercícios Avançados
-            </h2>
+        <!-- Séries e Repetições -->
+        <section id="fluxo" class="scroll-mt-header">
+            <h3 class="text-6xl font-black text-white italic tracking-tighter mb-20 text-center">SÉRIES E REPETIÇÕES (CONTROLE)</h3>
 
-            <div class="space-y-8">
-                <!-- Arrays -->
-                <div class="group bg-zinc-900/30 border border-zinc-800 hover:border-yellow-500/50 transition-all p-8 rounded-3xl">
-                    <div class="flex flex-col md:flex-row gap-8">
-                        <div class="md:w-1/3">
-                            <h3 class="text-xl font-bold mb-2">Arrays Dinâmicos</h3>
-                            <p class="text-zinc-400">Agrupe seus exercícios em séries. Suporte completo a indexação.</p>
+            <div class="grid lg:grid-cols-2 gap-16 items-start">
+                <div class="space-y-10">
+                    <div class="flex gap-6">
+                        <div class="w-14 h-14 birl-gradient rounded flex-shrink-0 flex items-center justify-center">
+                            <i data-lucide="git-branch" class="w-8 h-8"></i>
                         </div>
-                        <div class="md:w-2/3">
-                            <pre class="bg-black/50 p-6 rounded-2xl text-sm border border-zinc-800"><code><span class="text-purple-400">MONSTRO</span> series = [<span class="text-yellow-400">10, 12, 15</span>];
-<span class="text-blue-400">CE QUER VER ESSA PORRA?</span>(series[<span class="text-yellow-400">0</span>]);</code></pre>
+                        <div>
+                            <h4 class="text-4xl font-black text-white italic mb-2 leading-none uppercase">ELE QUE A GENTE QUER? (IF)</h4>
+                            <p class="text-zinc-500 text-xl font-medium">A decisão do campeão. Se a condição bater, executa o exercício.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6">
+                        <div class="w-14 h-14 birl-gradient rounded flex-shrink-0 flex items-center justify-center">
+                            <i data-lucide="refresh-cw" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-4xl font-black text-white italic mb-2 leading-none uppercase">MAIS QUERO MAIS (FOR)</h4>
+                            <p class="text-zinc-500 text-xl font-medium">Loop de volume. Repete a série até atingir a exaustão.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6">
+                        <div class="w-14 h-14 bg-red-600 text-white rounded flex-shrink-0 flex items-center justify-center">
+                            <i data-lucide="log-out" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-4xl font-black text-white italic mb-2 leading-none uppercase text-red-500">SAI FILHO DA PUTA (BREAK)</h4>
+                            <p class="text-zinc-500 text-xl font-bold italic">Fadigou? Abandona a série imediatamente.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Dicionários -->
-                <div class="group bg-zinc-900/30 border border-zinc-800 hover:border-yellow-500/50 transition-all p-8 rounded-3xl">
-                    <div class="flex flex-col md:flex-row gap-8">
-                        <div class="md:w-1/3">
-                            <h3 class="text-xl font-bold mb-2">Dicionários (Fibras)</h3>
-                            <p class="text-zinc-400">Monte a ficha completa usando mapas chave-valor nativos.</p>
-                        </div>
-                        <div class="md:w-2/3">
-                            <pre class="bg-black/50 p-6 rounded-2xl text-sm border border-zinc-800"><code><span class="text-purple-400">MONSTRO</span> ficha = {
-    <span class="text-green-400">"musculo"</span>: <span class="text-green-400">"Peito"</span>,
-    <span class="text-green-400">"series"</span>: <span class="text-yellow-400">4</span>
-};
-<span class="text-blue-400">CE QUER VER ESSA PORRA?</span>(ficha[<span class="text-green-400">"musculo"</span>]);</code></pre>
+                <div class="bg-black rounded-xl border border-zinc-800 shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden sticky top-24">
+                    <div class="bg-zinc-900 px-8 py-5 flex items-center justify-between">
+                        <span class="text-sm font-black text-zinc-500 tracking-widest italic">TREINO_PESADO.BIRL</span>
+                        <div class="flex gap-3">
+                            <div class="w-4 h-4 rounded-full bg-zinc-800"></div>
+                            <div class="w-4 h-4 rounded-full bg-zinc-800"></div>
                         </div>
                     </div>
-                </div>
+                    <pre class="p-12 text-lg font-mono leading-relaxed overflow-x-auto"><code><span class="text-zinc-600">// Exemplo de execução monstra</span>
+<span class="text-pink-500 font-bold italic">ELE QUE A GENTE QUER?</span> (peso > 100)
+    <span class="text-yellow-500 italic">CE QUER VER ESSA PORRA?</span>(<span class="text-emerald-400">"MONSTRO!"</span>);
+<span class="text-pink-500 font-bold italic">BIRL</span>
 
-                <!-- Controle Avançado -->
-                <div class="group bg-zinc-900/30 border border-zinc-800 hover:border-yellow-500/50 transition-all p-8 rounded-3xl">
-                    <div class="flex flex-col md:flex-row gap-8">
-                        <div class="md:w-1/3">
-                            <h3 class="text-xl font-bold mb-2">FOR &amp; Lógica</h3>
-                            <p class="text-zinc-400">Loops clássicos <code>MAIS QUERO MAIS</code> com suporte a <code>&&</code>, <code>||</code>, <code>SAI FILHO DA PUTA</code> (break) e <code>VAMO MONSTRO</code> (continue).</p>
+<span class="text-pink-500 font-bold italic">MAIS QUERO MAIS</span> (MONSTRO i=0; i<10; i=i+1)
+    <span class="text-pink-500 font-bold italic">ELE QUE A GENTE QUER?</span> (i == 5)
+        <span class="text-red-500 font-bold italic">SAI FILHO DA PUTA;</span>
+    <span class="text-pink-500 font-bold italic">BIRL</span>
+<span class="text-pink-500 font-bold italic">BIRL</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Suplementação -->
+        <section class="scroll-mt-header">
+            <div class="birl-gradient p-20 rounded-2xl flex flex-col lg:flex-row items-center gap-20 shadow-[0_0_80px_rgba(250,204,21,0.15)]">
+                <div class="lg:w-1/2">
+                    <h3 class="text-8xl font-black italic tracking-tighter mb-8 leading-none">SUPLEMENTAÇÃO (BUILTINS)</h3>
+                    <p class="text-black text-2xl font-black italic opacity-90 leading-relaxed uppercase">
+                        Funções nativas otimizadas para quem não tem tempo a perder com franguice.
+                    </p>
+                </div>
+                <div class="lg:w-1/2 w-full space-y-8">
+                    <div class="bg-black/10 p-10 rounded-xl border border-black/5 flex items-start gap-8">
+                        <i data-lucide="maximize" class="w-10 h-10 flex-shrink-0"></i>
+                        <div>
+                            <h4 class="text-3xl font-black italic mb-2 uppercase tracking-tighter">TAMANHO(obj)</h4>
+                            <p class="text-lg font-bold opacity-80 italic uppercase tracking-tighter">Retorna o volume da lista ou do texto.</p>
                         </div>
-                        <div class="md:w-2/3">
-                            <pre class="bg-black/50 p-6 rounded-2xl text-sm border border-zinc-800"><code><span class="text-pink-400">MAIS QUERO MAIS</span> (<span class="text-purple-400">MONSTRO</span> i = <span class="text-yellow-400">0</span>; i < <span class="text-yellow-400">10</span>; i = i + <span class="text-yellow-400">1</span>)
-    <span class="text-pink-400">ELE QUE A GENTE QUER?</span> (i == <span class="text-yellow-400">5</span>)
-        <span class="text-pink-400">SAI FILHO DA PUTA;</span> <span class="text-zinc-600">// Fadigou (Break)</span>
-    <span class="text-pink-400">BIRL</span>
-<span class="text-pink-400">BIRL</span></code></pre>
+                    </div>
+                    <div class="bg-black/10 p-10 rounded-xl border border-black/5 flex items-start gap-8">
+                        <i data-lucide="repeat" class="w-10 h-10 flex-shrink-0"></i>
+                        <div>
+                            <h4 class="text-3xl font-black italic mb-2 uppercase tracking-tighter">CONVERTE_MONSTRO(str)</h4>
+                            <p class="text-lg font-bold opacity-80 italic uppercase tracking-tighter">Transforma string fraca em inteiro monstro.</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Arquitetura Avançada -->
+        <section id="avancado" class="scroll-mt-header">
+            <h3 class="text-6xl font-black text-white italic tracking-tighter mb-24 text-center uppercase">FIBRAS E MEMÓRIA (AVANÇADO)</h3>
+
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="card-treino p-12 rounded-xl group">
+                    <i data-lucide="layers" class="w-12 h-12 text-yellow-500 mb-10 transition-transform group-hover:scale-125"></i>
+                    <h4 class="text-4xl font-black text-white italic mb-6">VETORES</h4>
+                    <p class="text-zinc-500 text-lg mb-10 italic font-bold uppercase tracking-tighter">Séries de dados sequenciais.</p>
+                    <pre class="bg-black p-6 rounded text-base font-mono text-yellow-500/60">MONSTRO v = [1, 2, 3];</pre>
+                </div>
+                <div class="card-treino p-12 rounded-xl group">
+                    <i data-lucide="database" class="w-12 h-12 text-yellow-500 mb-10 transition-transform group-hover:scale-125"></i>
+                    <h4 class="text-4xl font-black text-white italic mb-6">FIBRAS (MAPS)</h4>
+                    <p class="text-zinc-500 text-lg mb-10 italic font-bold uppercase tracking-tighter">Associações chave-valor.</p>
+                    <pre class="bg-black p-6 rounded text-base font-mono text-yellow-500/60">MONSTRO f = {"id": 1};</pre>
+                </div>
+                <div class="card-treino p-12 rounded-xl group">
+                    <i data-lucide="cpu" class="w-12 h-12 text-yellow-500 mb-10 transition-transform group-hover:scale-125"></i>
+                    <h4 class="text-4xl font-black text-white italic mb-6">PONTEIROS</h4>
+                    <p class="text-zinc-500 text-lg mb-10 italic font-bold uppercase tracking-tighter">Acesso direto ao músculo.</p>
+                    <pre class="bg-black p-6 rounded text-base font-mono text-yellow-500/60">MONSTRO p = &x;</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Workout -->
+        <section class="relative bg-zinc-900 border border-zinc-800 p-24 md:p-40 rounded-xl text-center overflow-hidden">
+            <div class="absolute inset-0 bg-yellow-500/5 opacity-50"></div>
+            <h2 class="relative text-white text-7xl md:text-9xl font-black italic tracking-tighter mb-12 leading-[0.8]">
+                NÃO VAI DAR <br>
+                <span class="text-yellow-500 italic">O QUE?</span>
+            </h2>
+            <p class="relative text-zinc-400 mb-16 max-w-3xl mx-auto text-2xl italic font-black uppercase tracking-tighter">
+                "O SEGREDO É NÃO PARAR, PORRA! SE VOCÊ QUER SER UM MONSTRO, PROGRAME COMO UM MONSTRO."
+            </p>
+            <a href="https://github.com/gabrielalmir/birl-go" class="relative bg-white text-black px-20 py-8 rounded font-black text-3xl uppercase italic tracking-tighter hover:bg-yellow-500 transition-all shadow-2xl">
+                REPOSITÓRIO NO GITHUB
+            </a>
         </section>
 
         <!-- Footer -->
-        <footer class="pt-24 border-t border-zinc-800 text-center">
-            <p class="text-zinc-500 mb-4 italic">"O segredo é não parar, porra!"</p>
-            <p class="text-sm text-zinc-600">
-                Desenvolvido com ódio e cafeína por <a href="https://github.com/gabrielalmir" class="text-zinc-400 hover:text-yellow-500 underline underline-offset-4">gabrielalmir</a>
+        <footer class="pt-32 border-t border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-12 pb-20">
+            <div class="flex items-center gap-4 text-zinc-800">
+                <i data-lucide="dumbbell" class="w-8 h-8"></i>
+                <span class="text-3xl font-black uppercase italic tracking-tighter leading-none">TREINO FINALIZADO</span>
+            </div>
+            <p class="text-lg text-zinc-600 uppercase font-black italic tracking-widest">
+                Interpretador por
+                <a href="https://github.com/gabrielalmir" class="text-zinc-400 hover:text-yellow-500 transition-colors underline underline-offset-[16px] decoration-zinc-800 decoration-2">
+                    gabrielalmir
+                </a>
             </p>
         </footer>
     </main>
 
+    <script>
+        lucide.createIcons();
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

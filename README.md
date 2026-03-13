@@ -12,6 +12,9 @@ Esta implementação suporta a maioria das funcionalidades da especificação or
 - [Go](https://golang.org/dl/) 1.21 ou superior instalado.
 
 ### Instalação
+**Windows:** [Baixar executável (v0.0.2)](https://github.com/gabrielalmir/birl-go/releases/download/v0.0.2/birl-windows-amd64.exe)
+
+**Via Código (Linux/macOS):**
 ```bash
 git clone https://github.com/gabrielalmir/birl-go.git
 cd birl-go
