@@ -3,6 +3,7 @@ package evaluator
 import (
 	"io"
 	"fmt"
+	"strconv"
 	"birl-go/ast"
 	"birl-go/object"
 )
@@ -46,6 +47,36 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		fmt.Fprintf(e.Stdout, "%s\n", val.Inspect())
 		return NULL
 
+	case *ast.ReadStatement:
+		var input string
+		fmt.Scan(&input)
+		// Tenta converter para int se possível, senão guarda como string
+		if val, err := strconv.ParseInt(input, 10, 64); err == nil {
+			obj := &object.Integer{Value: val}
+			if ident, ok := node.Expression.(*ast.Identifier); ok {
+				env.Set(ident.Value, obj)
+			}
+			return obj
+		}
+		obj := &object.String{Value: input}
+		if ident, ok := node.Expression.(*ast.Identifier); ok {
+			env.Set(ident.Value, obj)
+		}
+		return obj
+
+	case *ast.IfStatement:
+		return e.evalIfStatement(node, env)
+
+	case *ast.WhileStatement:
+		return e.evalWhileStatement(node, env)
+
+	case *ast.ReturnStatement:
+		val := e.Eval(node.ReturnValue, env)
+		if isError(val) {
+			return val
+		}
+		return &object.ReturnValue{Value: val}
+
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 
@@ -70,12 +101,65 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	return nil
 }
 
+func (e *Evaluator) evalIfStatement(is *ast.IfStatement, env *object.Environment) object.Object {
+	condition := e.Eval(is.Condition, env)
+	if isError(condition) {
+		return condition
+	}
+
+	if isTruthy(condition) {
+		return e.Eval(is.Consequence, env)
+	} else if is.Alternative != nil {
+		return e.Eval(is.Alternative, env)
+	} else {
+		return NULL
+	}
+}
+
+func (e *Evaluator) evalWhileStatement(ws *ast.WhileStatement, env *object.Environment) object.Object {
+	var result object.Object = NULL
+
+	for {
+		condition := e.Eval(ws.Condition, env)
+		if isError(condition) {
+			return condition
+		}
+
+		if !isTruthy(condition) {
+			break
+		}
+
+		result = e.Eval(ws.Body, env)
+		if result != nil && (result.Type() == object.RETURN_VALUE_OBJ || result.Type() == object.ERROR_OBJ) {
+			return result
+		}
+	}
+
+	return result
+}
+
+func isTruthy(obj object.Object) bool {
+	switch obj.Type() {
+	case object.NULL_OBJ:
+		return false
+	case object.BOOLEAN_OBJ:
+		return obj.(*object.Boolean).Value
+	case object.INTEGER_OBJ:
+		return obj.(*object.Integer).Value != 0
+	default:
+		return true
+	}
+}
+
 func (e *Evaluator) evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	var result object.Object
 
 	for _, statement := range program.Statements {
 		result = e.Eval(statement, env)
 
+		if returnValue, ok := result.(*object.ReturnValue); ok {
+			return returnValue.Value
+		}
 		if err, ok := result.(*object.Error); ok {
 			return err
 		}
@@ -92,7 +176,7 @@ func (e *Evaluator) evalBlockStatement(block *ast.BlockStatement, env *object.En
 
 		if result != nil {
 			rt := result.Type()
-			if rt == object.ERROR_OBJ {
+			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
 				return result
 			}
 		}
@@ -114,6 +198,10 @@ func (e *Evaluator) evalInfixExpression(operator string, left, right object.Obje
 		return e.evalIntegerInfixExpression(operator, left, right)
 	case operator == "+":
 		return &object.String{Value: left.Inspect() + right.Inspect()}
+	case operator == "==":
+		return &object.Boolean{Value: left.Inspect() == right.Inspect()}
+	case operator == "!=":
+		return &object.Boolean{Value: left.Inspect() != right.Inspect()}
 	default:
 		return newError("tipo desconhecido: %s %s %s", left.Type(), operator, right.Type())
 	}
@@ -132,6 +220,14 @@ func (e *Evaluator) evalIntegerInfixExpression(operator string, left, right obje
 		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
 		return &object.Integer{Value: leftVal / rightVal}
+	case "<":
+		return &object.Boolean{Value: leftVal < rightVal}
+	case ">":
+		return &object.Boolean{Value: leftVal > rightVal}
+	case "==":
+		return &object.Boolean{Value: leftVal == rightVal}
+	case "!=":
+		return &object.Boolean{Value: leftVal != rightVal}
 	default:
 		return newError("operador desconhecido: %s", operator)
 	}

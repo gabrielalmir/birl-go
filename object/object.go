@@ -1,20 +1,63 @@
 package object
 
-import "fmt"
+import (
+	"fmt"
+	"bytes"
+	"birl-go/ast"
+)
 
 type ObjectType string
 
 const (
-	INTEGER_OBJ = "INTEGER"
-	STRING_OBJ  = "STRING"
-	NULL_OBJ    = "NULL"
-	ERROR_OBJ   = "ERROR"
+	INTEGER_OBJ      = "INTEGER"
+	STRING_OBJ       = "STRING"
+	BOOLEAN_OBJ      = "BOOLEAN"
+	NULL_OBJ         = "NULL"
+	ERROR_OBJ        = "ERROR"
+	RETURN_VALUE_OBJ = "RETURN_VALUE"
+	FUNCTION_OBJ     = "FUNCTION"
 )
 
 type Object interface {
 	Type() ObjectType
 	Inspect() string
 }
+
+type Function struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (f *Function) Type() ObjectType { return FUNCTION_OBJ }
+func (f *Function) Inspect() string {
+	var out bytes.Buffer
+	out.WriteString("fn(")
+	for i, p := range f.Parameters {
+		out.WriteString(p.String())
+		if i < len(f.Parameters)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+	return out.String()
+}
+
+type Boolean struct {
+	Value bool
+}
+
+func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
+func (b *Boolean) Inspect() string  { return fmt.Sprintf("%t", b.Value) }
+
+type ReturnValue struct {
+	Value Object
+}
+
+func (rv *ReturnValue) Type() ObjectType { return RETURN_VALUE_OBJ }
+func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
 
 type Integer struct {
 	Value int64

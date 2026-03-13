@@ -1,0 +1,11 @@
+HORA DO SHOW
+    MONSTRO i = 0;
+    NEGATIVA BAMBAM (i < 5)
+        CE QUER VER ESSA PORRA?(i);
+        i = i + 1;
+    BIRL
+
+    ELE QUE A GENTE QUER? (i == 5)
+        CE QUER VER ESSA PORRA?("I EH CINCO PORRA!");
+    BIRL
+BIRL

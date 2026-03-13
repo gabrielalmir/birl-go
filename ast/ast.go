@@ -117,6 +117,64 @@ func (ie *InfixExpression) String() string {
 	return out.String()
 }
 
+type AssignmentExpression struct {
+	Token lexer.Token // O token '='
+	Name  *Identifier
+	Value Expression
+}
+
+func (ae *AssignmentExpression) expressionNode()      {}
+func (ae *AssignmentExpression) TokenLiteral() string { return ae.Token.Literal }
+func (ae *AssignmentExpression) String() string {
+	return ae.Name.String() + " = " + ae.Value.String()
+}
+
+type FunctionLiteral struct {
+	Token      lexer.Token // 'OH O HOMEM AI PO'
+	Parameters []*Identifier
+	Body       *BlockStatement
+	Name       string
+}
+
+func (fl *FunctionLiteral) expressionNode()      {}
+func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
+func (fl *FunctionLiteral) String() string {
+	var out bytes.Buffer
+	out.WriteString(fl.TokenLiteral())
+	out.WriteString(" " + fl.Name + "(")
+	for i, p := range fl.Parameters {
+		out.WriteString(p.String())
+		if i < len(fl.Parameters)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString(") ")
+	out.WriteString(fl.Body.String())
+	return out.String()
+}
+
+type CallExpression struct {
+	Token     lexer.Token // 'AJUDA O MALUCO TA DOENTE'
+	Function  Expression  // Identificador da função
+	Arguments []Expression
+}
+
+func (ce *CallExpression) expressionNode()      {}
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+func (ce *CallExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString(ce.Function.String())
+	out.WriteString("(")
+	for i, a := range ce.Arguments {
+		out.WriteString(a.String())
+		if i < len(ce.Arguments)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString(")")
+	return out.String()
+}
+
 type PrintStatement struct {
 	Token      lexer.Token
 	Expression Expression
@@ -127,6 +185,84 @@ func (ps *PrintStatement) TokenLiteral() string { return ps.Token.Literal }
 func (ps *PrintStatement) String() string {
 	return ps.TokenLiteral() + "(" + ps.Expression.String() + ");"
 }
+
+type ReadStatement struct {
+	Token      lexer.Token
+	Expression Expression // Normalmente um identificador
+}
+
+func (rs *ReadStatement) statementNode()       {}
+func (rs *ReadStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReadStatement) String() string {
+	return rs.TokenLiteral() + "(" + rs.Expression.String() + ");"
+}
+
+type ReturnStatement struct {
+	Token       lexer.Token
+	ReturnValue Expression
+}
+
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReturnStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(rs.TokenLiteral() + " ")
+	if rs.ReturnValue != nil {
+		out.WriteString(rs.ReturnValue.String())
+	}
+	out.WriteString(";")
+	return out.String()
+}
+
+type IfStatement struct {
+	Token       lexer.Token
+	Condition   Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (is *IfStatement) statementNode()       {}
+func (is *IfStatement) TokenLiteral() string { return is.Token.Literal }
+func (is *IfStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(is.TokenLiteral() + "(")
+	out.WriteString(is.Condition.String())
+	out.WriteString(") ")
+	out.WriteString(is.Consequence.String())
+	if is.Alternative != nil {
+		out.WriteString("NÃO VAI DAR NÃO ")
+		out.WriteString(is.Alternative.String())
+	}
+	out.WriteString("BIRL")
+	return out.String()
+}
+
+type WhileStatement struct {
+	Token     lexer.Token
+	Condition Expression
+	Body      *BlockStatement
+}
+
+func (ws *WhileStatement) statementNode()       {}
+func (ws *WhileStatement) TokenLiteral() string { return ws.Token.Literal }
+func (ws *WhileStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(ws.TokenLiteral() + "(")
+	out.WriteString(ws.Condition.String())
+	out.WriteString(") ")
+	out.WriteString(ws.Body.String())
+	out.WriteString("BIRL")
+	return out.String()
+}
+
+type BooleanLiteral struct {
+	Token lexer.Token
+	Value bool
+}
+
+func (bl *BooleanLiteral) expressionNode()      {}
+func (bl *BooleanLiteral) TokenLiteral() string { return bl.Token.Literal }
+func (bl *BooleanLiteral) String() string       { return bl.Token.Literal }
 
 type BlockStatement struct {
 	Token      lexer.Token

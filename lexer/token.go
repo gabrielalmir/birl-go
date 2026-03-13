@@ -51,6 +51,7 @@ const (
 	BREAK      = "SAI FILHO DA PUTA"
 	CONTINUE   = "VAMO MONSTRO"
 	FUNC       = "OH O HOMEM AI PO"
+	CALL       = "AJUDA O MALUCO TA DOENTE"
 
 	// Tipos
 	TYPE_INT   = "MONSTRO"
@@ -72,6 +73,7 @@ var keywords = map[string]TokenType{
 	"SAI FILHO DA PUTA":       BREAK,
 	"VAMO MONSTRO":            CONTINUE,
 	"OH O HOMEM AI PO":        FUNC,
+	"AJUDA O MALUCO TA DOENTE": CALL,
 	"MONSTRO":                 TYPE_INT,
 	"TRAPÉZIO":                TYPE_FLOAT,
 	"FRANGO":                  TYPE_CHAR,
