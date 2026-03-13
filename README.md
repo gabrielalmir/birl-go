@@ -16,9 +16,15 @@ Este repositório contém um interpretador básico para a linguagem BIRL, implem
 | `TRAPÉZIO` | `float` | Tipo Float |
 | `FRANGO` | `char` / `string` | Tipo String |
 | `CE QUER VER ESSA PORRA?` | `printf` | Saída de dados |
-| `BORA CUMPADE` | `return` | Retorno (em desenvolvimento) |
+| `QUE QUE CE QUER MONSTRÃO?` | `scanf` | Entrada de dados |
+| `ELE QUE A GENTE QUER?` | `if` | Estrutura condicional |
+| `NÃO VAI DAR NÃO` | `else` | Alternativa condicional |
+| `NEGATIVA BAMBAM` | `while` | Estrutura de repetição |
+| `BORA CUMPADE` | `return` | Retorno de valor |
+| `OH O HOMEM AI PO` | `function` | Declaração de função |
+| `AJUDA O MALUCO TA DOENTE`| `call` | Chamada de função |
 
-*Nota: Atualmente o interpretador foca em declarações de variáveis, operações matemáticas básicas e exibição de dados.*
+*Nota: Atualmente o interpretador suporta declarações de variáveis, operações matemáticas, estruturas de controle e funções.*
 
 ## 🛠️ Como Executar
 
@@ -26,25 +32,27 @@ Certifique-se de ter o [Go](https://golang.org/dl/) instalado em sua máquina.
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/gabrielalmir/birl-go.git
+   git clone https://github.com/seu-usuario/birl-go.git
    cd birl-go
    ```
 
 2. **Execute um arquivo `.birl`:**
    ```bash
-   go run main.go teste.birl
+   go run main.go tests/scripts/soma.birl
    ```
 
 ## 📝 Exemplo de Código
 
-Veja como é um código "monstro" em `teste.birl`:
+Veja como é um código "monstro" em `tests/scripts/funcoes.birl`:
 
 ```birl
+OH O HOMEM AI PO MONSTRO SOMA(MONSTRO a, MONSTRO b)
+    BORA CUMPADE a + b;
+BIRL
+
 HORA DO SHOW
-    MONSTRO a = 13;
-    MONSTRO b = 24;
-    CE QUER VER ESSA PORRA?(a + b);
-    CE QUER VER ESSA PORRA?("BORA, CUMPADE!");
+    MONSTRO x = AJUDA O MALUCO TA DOENTE SOMA(10, 20);
+    CE QUER VER ESSA PORRA?(x);
 BIRL
 ```
 
@@ -59,12 +67,13 @@ BIRL
 
 ## 🚧 Status do Desenvolvimento
 
-Este projeto é um subconjunto da [especificação oficial do BIRL](https://birl-language.github.io/).
+Este projeto agora suporta as principais características da [especificação oficial do BIRL](https://birl-language.github.io/). 
 
 **Próximos passos:**
-- [ ] Implementar estruturas de controle (`ELE QUE A GENTE QUER?`, `NEGATIVA BAMBAM`).
-- [ ] Adicionar suporte a funções (`OH O HOMEM AI PO`).
-- [ ] Suporte para entrada de dados (`QUE QUE CE QUER MONSTRÃO?`).
+- [ ] Implementar `QUE NUM VAI DAR O QUE?` (else if).
+- [ ] Suporte a arrays e ponteiros.
+- [ ] Melhorar o tratamento de erros e mensagens.
+
 
 ---
 *"É 13 PORRA! BORA CUMPADE!"* 🦍

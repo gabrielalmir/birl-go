@@ -295,7 +295,9 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	// Tipo (ignorado por enquanto)
 	p.nextToken()
 	
-	// Nome da função
+	// Nome da função (pula o tipo e vai para o nome)
+	p.nextToken()
+	
 	if p.curToken.Type != lexer.IDENT {
 		return nil
 	}
