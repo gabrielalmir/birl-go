@@ -26,7 +26,7 @@ Certifique-se de ter o [Go](https://golang.org/dl/) instalado em sua máquina.
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/seu-usuario/birl-go.git
+   git clone https://github.com/gabrielalmir/birl-go.git
    cd birl-go
    ```
 
@@ -59,7 +59,7 @@ BIRL
 
 ## 🚧 Status do Desenvolvimento
 
-Este projeto é um subconjunto da [especificação oficial do BIRL](https://birl-language.github.io/). 
+Este projeto é um subconjunto da [especificação oficial do BIRL](https://birl-language.github.io/).
 
 **Próximos passos:**
 - [ ] Implementar estruturas de controle (`ELE QUE A GENTE QUER?`, `NEGATIVA BAMBAM`).
