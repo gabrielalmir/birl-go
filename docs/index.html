@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIRL-GO | Documentação Monstra</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        code { font-family: 'Fira Code', monospace; }
+        .birl-gradient {
+            background: linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 antialiased">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🏋️‍♂️</span>
+                <span class="font-black text-xl tracking-tighter birl-gradient bg-clip-text text-transparent italic">BIRL-GO</span>
+            </div>
+            <div class="flex gap-6 text-sm font-medium text-zinc-400">
+                <a href="#inicio" class="hover:text-yellow-400 transition-colors">Início</a>
+                <a href="#sintaxe" class="hover:text-yellow-400 transition-colors">Sintaxe</a>
+                <a href="#exemplos" class="hover:text-yellow-400 transition-colors">Exemplos</a>
+                <a href="https://github.com/gabrielalmir/birl-go" class="text-white bg-zinc-800 px-3 py-1 rounded-full hover:bg-zinc-700 transition-colors">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header id="inicio" class="max-w-5xl mx-auto px-6 py-24 text-center">
+        <h1 class="text-6xl md:text-8xl font-black mb-6 tracking-tight italic uppercase">
+            AQUI NÃO É <span class="birl-gradient bg-clip-text text-transparent">CÓDIGO</span>,<br>
+            É <span class="birl-gradient bg-clip-text text-transparent">MÚSCULO</span>!
+        </h1>
+        <p class="text-zinc-400 text-xl max-w-2xl mx-auto mb-10">
+            A implementação em Go da linguagem BIRL. Performance bruta, tipagem monstra e sem sedentarismo digital.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <code class="bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-lg text-yellow-400">
+                git clone https://github.com/gabrielalmir/birl-go.git
+            </code>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 pb-24 space-y-32">
+        
+        <!-- Guia de Sintaxe -->
+        <section id="sintaxe" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold mb-12 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-yellow-500 text-black flex items-center justify-center text-lg italic font-black">1</span>
+                Guia de Treino (Sintaxe)
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl">
+                    <h3 class="text-yellow-500 font-bold mb-4 uppercase tracking-wider text-sm">Variáveis e Tipos</h3>
+                    <p class="text-zinc-400 mb-4">No BIRL-GO, você não declara variáveis, você define o peso do treino.</p>
+                    <pre class="bg-black/50 p-4 rounded-xl text-sm border border-zinc-800"><code><span class="text-purple-400">MONSTRO</span> peso = <span class="text-yellow-400">100</span>; <span class="text-zinc-600">// int64</span>
+<span class="text-purple-400">TRAPÉZIO</span> altura = <span class="text-yellow-400">1.85</span>; <span class="text-zinc-600">// float64</span>
+<span class="text-purple-400">FRANGO</span> nome = <span class="text-green-400">"Bambam"</span>; <span class="text-zinc-600">// string</span></code></pre>
+                </div>
+
+                <div class="bg-zinc-900/50 border border-zinc-800 p-6 rounded-2xl">
+                    <h3 class="text-yellow-500 font-bold mb-4 uppercase tracking-wider text-sm">Controle de Fluxo</h3>
+                    <p class="text-zinc-400 mb-4">Decisões rápidas como um drop-set.</p>
+                    <pre class="bg-black/50 p-4 rounded-xl text-sm border border-zinc-800"><code><span class="text-pink-400">ELE QUE A GENTE QUER?</span> (peso > 80)
+    <span class="text-zinc-600">// Se for monstro</span>
+<span class="text-pink-400">BIRL</span>
+<span class="text-pink-400">NÃO VAI DAR NÃO</span>
+    <span class="text-zinc-600">// Se for frango</span>
+<span class="text-pink-400">BIRL</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recursos Avançados -->
+        <section id="exemplos" class="scroll-mt-24">
+            <h2 class="text-3xl font-bold mb-12 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-yellow-500 text-black flex items-center justify-center text-lg italic font-black">2</span>
+                Exercícios Avançados
+            </h2>
+
+            <div class="space-y-8">
+                <!-- Arrays -->
+                <div class="group bg-zinc-900/30 border border-zinc-800 hover:border-yellow-500/50 transition-all p-8 rounded-3xl">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/3">
+                            <h3 class="text-xl font-bold mb-2">Arrays Dinâmicos</h3>
+                            <p class="text-zinc-400">Agrupe seus exercícios em séries. Suporte completo a indexação.</p>
+                        </div>
+                        <div class="md:w-2/3">
+                            <pre class="bg-black/50 p-6 rounded-2xl text-sm border border-zinc-800"><code><span class="text-purple-400">MONSTRO</span> series = [<span class="text-yellow-400">10, 12, 15</span>];
+<span class="text-blue-400">CE QUER VER ESSA PORRA?</span>(series[<span class="text-yellow-400">0</span>]);</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ponteiros -->
+                <div class="group bg-zinc-900/30 border border-zinc-800 hover:border-yellow-500/50 transition-all p-8 rounded-3xl">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/3">
+                            <h3 class="text-xl font-bold mb-2">Ponteiros Brutos</h3>
+                            <p class="text-zinc-400">Acesso direto à memória. Aponte para o músculo alvo com <code>&</code> e <code>*</code>.</p>
+                        </div>
+                        <div class="md:w-2/3">
+                            <pre class="bg-black/50 p-6 rounded-2xl text-sm border border-zinc-800"><code><span class="text-purple-400">MONSTRO</span> x = <span class="text-yellow-400">13</span>;
+<span class="text-purple-400">MONSTRO</span> p = <span class="text-yellow-400">&</span>x;
+<span class="text-blue-400">CE QUER VER ESSA PORRA?</span>(<span class="text-yellow-400">*</span>p);</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="pt-24 border-t border-zinc-800 text-center">
+            <p class="text-zinc-500 mb-4 italic">"O segredo é não parar, porra!"</p>
+            <p class="text-sm text-zinc-600">
+                Desenvolvido com ódio e cafeína por <a href="https://github.com/gabrielalmir" class="text-zinc-400 hover:text-yellow-500 underline underline-offset-4">gabrielalmir</a>
+            </p>
+        </footer>
+    </main>
+
+</body>
+</html>
