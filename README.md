@@ -67,13 +67,15 @@ BIRL
 
 ## 🚧 Status do Desenvolvimento
 
-Este projeto agora suporta as principais características da [especificação oficial do BIRL](https://birl-language.github.io/).
+Este projeto agora suporta a maioria das características da [especificação oficial do BIRL](https://birl-language.github.io/). 
 
-**Próximos passos:**
-- [ ] Implementar `QUE NUM VAI DAR O QUE?` (else if).
-- [ ] Suporte a arrays e ponteiros.
-- [ ] Melhorar o tratamento de erros e mensagens.
-
+**Tarefas Concluídas:**
+- [x] Implementar `QUE NUM VAI DAR O QUE?` (else if).
+- [x] Suporte a arrays e ponteiros.
+- [x] Melhorar o tratamento de erros e mensagens.
+- [x] Estruturas de controle (`ELE QUE A GENTE QUER?`, `NEGATIVA BAMBAM`).
+- [x] Suporte a funções (`OH O HOMEM AI PO`).
+- [x] Suporte para entrada de dados (`QUE QUE CE QUER MONSTRÃO?`).
 
 ---
 *"É 13 PORRA! BORA CUMPADE!"* 🦍

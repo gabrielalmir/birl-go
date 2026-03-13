@@ -16,11 +16,40 @@ const (
 	ERROR_OBJ        = "ERROR"
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	FUNCTION_OBJ     = "FUNCTION"
+	ARRAY_OBJ        = "ARRAY"
+	POINTER_OBJ      = "POINTER"
 )
 
 type Object interface {
 	Type() ObjectType
 	Inspect() string
+}
+
+type Array struct {
+	Elements []Object
+}
+
+func (a *Array) Type() ObjectType { return ARRAY_OBJ }
+func (a *Array) Inspect() string {
+	var out bytes.Buffer
+	out.WriteString("[")
+	for i, el := range a.Elements {
+		out.WriteString(el.Inspect())
+		if i < len(a.Elements)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString("]")
+	return out.String()
+}
+
+type Pointer struct {
+	Value *Object
+}
+
+func (p *Pointer) Type() ObjectType { return POINTER_OBJ }
+func (p *Pointer) Inspect() string {
+	return fmt.Sprintf("&%p", p.Value)
 }
 
 type Function struct {

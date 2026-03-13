@@ -97,6 +97,31 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return e.evalInfixExpression(node.Operator, left, right)
 
+	case *ast.PrefixExpression:
+		right := e.Eval(node.Right, env)
+		if isError(right) {
+			return right
+		}
+		return e.evalPrefixExpression(node.Operator, right, env, node.Right)
+
+	case *ast.ArrayLiteral:
+		elements := e.evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+		return &object.Array{Elements: elements}
+
+	case *ast.IndexExpression:
+		left := e.Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+		index := e.Eval(node.Index, env)
+		if isError(index) {
+			return index
+		}
+		return e.evalIndexExpression(left, index)
+
 	case *ast.AssignmentExpression:
 		val := e.Eval(node.Value, env)
 		if isError(val) {
@@ -171,11 +196,23 @@ func (e *Evaluator) evalIfStatement(is *ast.IfStatement, env *object.Environment
 
 	if isTruthy(condition) {
 		return e.Eval(is.Consequence, env)
-	} else if is.Alternative != nil {
-		return e.Eval(is.Alternative, env)
-	} else {
-		return NULL
 	}
+
+	for _, eif := range is.ElseIfs {
+		condition = e.Eval(eif.Condition, env)
+		if isError(condition) {
+			return condition
+		}
+		if isTruthy(condition) {
+			return e.Eval(eif.Consequence, env)
+		}
+	}
+
+	if is.Alternative != nil {
+		return e.Eval(is.Alternative, env)
+	}
+
+	return NULL
 }
 
 func (e *Evaluator) evalWhileStatement(ws *ast.WhileStatement, env *object.Environment) object.Object {
@@ -251,7 +288,7 @@ func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
-	return newError("identificador não encontrado: %s", node.Value)
+	return newError("IDENTIFICADOR NÃO ENCONTRADO: %s. TÁ MALUCO, PO?!", node.Value)
 }
 
 func (e *Evaluator) evalInfixExpression(operator string, left, right object.Object) object.Object {
@@ -293,6 +330,66 @@ func (e *Evaluator) evalIntegerInfixExpression(operator string, left, right obje
 	default:
 		return newError("operador desconhecido: %s", operator)
 	}
+}
+
+func (e *Evaluator) evalPrefixExpression(operator string, right object.Object, env *object.Environment, node ast.Expression) object.Object {
+	switch operator {
+	case "!":
+		return e.evalBangOperatorExpression(right)
+	case "&":
+		// Simulação de endereço para identificadores
+		if ident, ok := node.(*ast.Identifier); ok {
+			if val, exists := env.Get(ident.Value); exists {
+				return &object.Pointer{Value: &val}
+			}
+		}
+		// Se for um literal, "aloca" e retorna o endereço
+		return &object.Pointer{Value: &right}
+	case "*":
+		if ptr, ok := right.(*object.Pointer); ok {
+			return *ptr.Value
+		}
+		return newError("NÃO PODE DESREFERENCIAR ESSA PORRA: %s", right.Type())
+	default:
+		return newError("OPERADOR DESCONHECIDO: %s%s, SEU FRANGO!", operator, right.Type())
+	}
+}
+
+func (e *Evaluator) evalBangOperatorExpression(right object.Object) object.Object {
+	switch right {
+	case &object.Boolean{Value: true}:
+		return &object.Boolean{Value: false}
+	case &object.Boolean{Value: false}:
+		return &object.Boolean{Value: true}
+	case NULL:
+		return &object.Boolean{Value: true}
+	default:
+		if isTruthy(right) {
+			return &object.Boolean{Value: false}
+		}
+		return &object.Boolean{Value: true}
+	}
+}
+
+func (e *Evaluator) evalIndexExpression(left, index object.Object) object.Object {
+	switch {
+	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return e.evalArrayIndexExpression(left, index)
+	default:
+		return newError("INDEXADOR NÃO SUPORTADO PARA: %s", left.Type())
+	}
+}
+
+func (e *Evaluator) evalArrayIndexExpression(array, index object.Object) object.Object {
+	arrayObject := array.(*object.Array)
+	idx := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+
+	if idx < 0 || idx > max {
+		return newError("ÍNDICE FORA DA JAULA: %d, MÁXIMO É %d!", idx, max)
+	}
+
+	return arrayObject.Elements[idx]
 }
 
 func isError(obj object.Object) bool {

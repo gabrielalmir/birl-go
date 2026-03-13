@@ -98,6 +98,61 @@ func (sl *StringLiteral) expressionNode()      {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 func (sl *StringLiteral) String() string       { return sl.Value }
 
+type PrefixExpression struct {
+	Token    lexer.Token // !, &, *
+	Operator string
+	Right    Expression
+}
+
+func (pe *PrefixExpression) expressionNode()      {}
+func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+	return out.String()
+}
+
+type ArrayLiteral struct {
+	Token    lexer.Token // [
+	Elements []Expression
+}
+
+func (al *ArrayLiteral) expressionNode()      {}
+func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
+func (al *ArrayLiteral) String() string {
+	var out bytes.Buffer
+	out.WriteString("[")
+	for i, el := range al.Elements {
+		out.WriteString(el.String())
+		if i < len(al.Elements)-1 {
+			out.WriteString(", ")
+		}
+	}
+	out.WriteString("]")
+	return out.String()
+}
+
+type IndexExpression struct {
+	Token lexer.Token // [
+	Left  Expression
+	Index Expression
+}
+
+func (ie *IndexExpression) expressionNode()      {}
+func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *IndexExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(ie.Left.String())
+	out.WriteString("[")
+	out.WriteString(ie.Index.String())
+	out.WriteString("])")
+	return out.String()
+}
+
 type InfixExpression struct {
 	Token    lexer.Token
 	Left     Expression
@@ -214,10 +269,16 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
+type IfElseIf struct {
+	Condition   Expression
+	Consequence *BlockStatement
+}
+
 type IfStatement struct {
 	Token       lexer.Token
 	Condition   Expression
 	Consequence *BlockStatement
+	ElseIfs     []*IfElseIf
 	Alternative *BlockStatement
 }
 
@@ -229,6 +290,14 @@ func (is *IfStatement) String() string {
 	out.WriteString(is.Condition.String())
 	out.WriteString(") ")
 	out.WriteString(is.Consequence.String())
+	
+	for _, eif := range is.ElseIfs {
+		out.WriteString("QUE NUM VAI DAR O QUE? (")
+		out.WriteString(eif.Condition.String())
+		out.WriteString(") ")
+		out.WriteString(eif.Consequence.String())
+	}
+
 	if is.Alternative != nil {
 		out.WriteString("NÃO VAI DAR NÃO ")
 		out.WriteString(is.Alternative.String())

@@ -28,6 +28,7 @@ const (
 	GT       = ">"
 	EQ       = "=="
 	NOT_EQ   = "!="
+	AMPERSAND = "&"
 
 	// Delimitadores
 	COMMA     = ","
@@ -36,6 +37,8 @@ const (
 	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
+	LBRACKET  = "["
+	RBRACKET  = "]"
 
 	// Palavras-chave BIRL
 	START_PROG = "HORA DO SHOW"
