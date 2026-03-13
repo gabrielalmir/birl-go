@@ -1,81 +1,117 @@
 # BIRL-GO 🏋️‍♂️💪
 
-Uma implementação em Go (Golang) da linguagem **BIRL** (*Bambam's "It's show time" Recursive Language*). O interpretador segue a filosofia "TREZE PORRA!" e "AQUI É BODYBUILDER", permitindo que você escreva códigos com a energia do Kleber Bambam.
+Uma implementação em Go (Golang) da linguagem **BIRL** (*Bambam's "It's show time" Recursive Language*). Siga a filosofia "TREZE PORRA!" e "AQUI É BODYBUILDER" diretamente no seu terminal.
 
-## 🚀 Sobre o Projeto
+Esta implementação suporta a maioria das funcionalidades da especificação original com adições regionais (acentuação) e recursos como ponteiros e arrays.
 
-Este repositório contém um interpretador básico para a linguagem BIRL, implementando o Lexer, Parser, AST e Evaluator. Ele suporta um subconjunto da sintaxe original, com algumas adaptações regionais (acentuação em português).
+## 🚀 Como Começar
 
-### Sintaxe Suportada
+### Pré-requisitos
+- [Go](https://golang.org/dl/) 1.21 ou superior instalado.
 
-| BIRL (Este Projeto) | C / Equivalente | Descrição |
+### Instalação
+```bash
+git clone https://github.com/gabrielalmir/birl-go.git
+cd birl-go
+go build -o birl main.go
+```
+
+### Uso
+Para rodar um arquivo `.birl`:
+```bash
+./birl tests/scripts/soma.birl
+```
+
+---
+
+## 📚 Referência de Sintaxe
+
+### Estrutura do Programa
+| BIRL | C / Equivalente | Descrição |
 | :--- | :--- | :--- |
-| `HORA DO SHOW` | `int main() {` | Início do programa |
-| `BIRL` | `}` | Fim do bloco |
-| `MONSTRO` | `int` | Tipo Inteiro |
-| `TRAPÉZIO` | `float` | Tipo Float |
-| `FRANGO` | `char` / `string` | Tipo String |
-| `CE QUER VER ESSA PORRA?` | `printf` | Saída de dados |
-| `QUE QUE CE QUER MONSTRÃO?` | `scanf` | Entrada de dados |
-| `ELE QUE A GENTE QUER?` | `if` | Estrutura condicional |
-| `NÃO VAI DAR NÃO` | `else` | Alternativa condicional |
-| `NEGATIVA BAMBAM` | `while` | Estrutura de repetição |
-| `BORA CUMPADE` | `return` | Retorno de valor |
-| `OH O HOMEM AI PO` | `function` | Declaração de função |
-| `AJUDA O MALUCO TA DOENTE`| `call` | Chamada de função |
+| `HORA DO SHOW` | `int main() {` | Início do programa principal |
+| `BIRL` | `}` | Fim de qualquer bloco |
 
-*Nota: Atualmente o interpretador suporta declarações de variáveis, operações matemáticas, estruturas de controle e funções.*
+### Tipos de Dados
+| BIRL | Tipo |
+| :--- | :--- |
+| `MONSTRO` | Inteiro (`int64`) |
+| `TRAPÉZIO` | Ponto flutuante (`float64`) |
+| `FRANGO` | Caractere / String |
 
-## 🛠️ Como Executar
+### Entrada e Saída
+| BIRL | Função |
+| :--- | :--- |
+| `CE QUER VER ESSA PORRA?(exp);` | `printf` (Saída) |
+| `QUE QUE CE QUER MONSTRÃO?(var);` | `scanf` (Entrada) |
 
-Certifique-se de ter o [Go](https://golang.org/dl/) instalado em sua máquina.
+### Controle de Fluxo
+| BIRL | Equivalente |
+| :--- | :--- |
+| `ELE QUE A GENTE QUER? (cond)` | `if` |
+| `QUE NUM VAI DAR O QUE? (cond)` | `else if` |
+| `NÃO VAI DAR NÃO` | `else` |
+| `NEGATIVA BAMBAM (cond)` | `while` |
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/gabrielalmir/birl-go.git
-   cd birl-go
-   ```
+### Funções
+- **Declaração:** `OH O HOMEM AI PO [tipo] [nome]([params])`
+- **Chamada:** `AJUDA O MALUCO TA DOENTE [nome]([args])`
+- **Retorno:** `BORA CUMPADE [valor];`
 
-2. **Execute um arquivo `.birl`:**
-   ```bash
-   go run main.go tests/scripts/soma.birl
-   ```
+### Ponteiros e Arrays
+- **Endereço:** `&variavel`
+- **Desreferência:** `*ponteiro`
+- **Arrays:** `MONSTRO lista = [1, 2, 3];`
+- **Acesso:** `lista[0]`
 
-## 📝 Exemplo de Código
+---
 
-Veja como é um código "monstro" em `tests/scripts/funcoes.birl`:
+## 🛠️ Exemplos
 
+### 1. Loop Monstro
 ```birl
-OH O HOMEM AI PO MONSTRO SOMA(MONSTRO a, MONSTRO b)
-    BORA CUMPADE a + b;
-BIRL
-
 HORA DO SHOW
-    MONSTRO x = AJUDA O MALUCO TA DOENTE SOMA(10, 20);
-    CE QUER VER ESSA PORRA?(x);
+    MONSTRO i = 0;
+    NEGATIVA BAMBAM (i < 3)
+        CE QUER VER ESSA PORRA?("CONTANDO...");
+        CE QUER VER ESSA PORRA?(i);
+        i = i + 1;
+    BIRL
 BIRL
 ```
 
-## 📂 Estrutura do Repositório
+### 2. Função com Retorno
+```birl
+OH O HOMEM AI PO MONSTRO DOBRO(MONSTRO n)
+    BORA CUMPADE n * 2;
+BIRL
 
-- `/lexer`: Analisador léxico que transforma o texto em tokens.
-- `/parser`: Transforma os tokens em uma Árvore de Sintaxe Abstrata (AST).
-- `/ast`: Definições dos nós da árvore de sintaxe.
-- `/evaluator`: Onde a "mágica" acontece e o código é executado.
-- `/object`: Sistema de tipos internos do interpretador.
-- `/tests/scripts`: Exemplos de scripts BIRL para teste.
+HORA DO SHOW
+    MONSTRO x = AJUDA O MALUCO TA DOENTE DOBRO(7);
+    CE QUER VER ESSA PORRA?(x); // Imprime 14
+BIRL
+```
 
-## 🚧 Status do Desenvolvimento
-
-Este projeto agora suporta a maioria das características da [especificação oficial do BIRL](https://birl-language.github.io/). 
-
-**Tarefas Concluídas:**
-- [x] Implementar `QUE NUM VAI DAR O QUE?` (else if).
-- [x] Suporte a arrays e ponteiros.
-- [x] Melhorar o tratamento de erros e mensagens.
-- [x] Estruturas de controle (`ELE QUE A GENTE QUER?`, `NEGATIVA BAMBAM`).
-- [x] Suporte a funções (`OH O HOMEM AI PO`).
-- [x] Suporte para entrada de dados (`QUE QUE CE QUER MONSTRÃO?`).
+### 3. Ponteiros (AQUI É BODYBUILDER!)
+```birl
+HORA DO SHOW
+    MONSTRO x = 13;
+    MONSTRO p = &x;
+    CE QUER VER ESSA PORRA?(*p); // Imprime 13
+BIRL
+```
 
 ---
-*"É 13 PORRA! BORA CUMPADE!"* 🦍
+
+## 📂 Documentação Online
+A documentação detalhada está disponível em: [https://gabrielalmir.github.io/birl-go/](https://gabrielalmir.github.io/birl-go/)
+
+## 🤝 Contribuição
+1. Faça um Fork do projeto
+2. Crie uma Branch para sua Feature (`git checkout -b feature/TreinoPesado`)
+3. Commit suas mudanças (`git commit -m 'Add: Novo Exercício'`)
+4. Push para a Branch (`git push origin feature/TreinoPesado`)
+5. Abra um Pull Request
+
+---
+*"É 13 PORRA! SAÍ DAQUI QUE É HORA DO SHOW!"* 🦍
