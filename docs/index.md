@@ -13,14 +13,33 @@ BIRL (**Bambam's "It's show time" Recursive Language**) é uma linguagem de prog
 
 ## Guia de Sintaxe
 
+### Estrutura do Programa
+Todo programa monstro começa com `HORA DO SHOW` e termina com `BIRL`.
+
+```birl
+HORA DO SHOW
+    // Seu treino aqui
+BIRL
+```
+
 ### Declaração de Variáveis
-Use `MONSTRO` para números inteiros. É o básico do treino.
+- `MONSTRO`: Inteiro (64 bits)
+- `TRAPÉZIO`: Ponto Flutuante (64 bits)
+- `FRANGO`: Texto/String
+
 ```birl
 MONSTRO peso = 100;
+TRAPÉZIO bf = 7.5;
+FRANGO grito = "SAI DE CASA COMI PRA CARALHO!";
 ```
 
 ### Estruturas de Decisão
 BIRL não aceita desculpas. Ou é, ou não é.
+
+- `ELE QUE A GENTE QUER? (cond)`: IF
+- `QUE NUM VAI DAR O QUE? (cond)`: ELSE IF
+- `NÃO VAI DAR NÃO`: ELSE
+
 ```birl
 ELE QUE A GENTE QUER? (peso > 80)
     CE QUER VER ESSA PORRA?("TA FICANDO MONSTRO!");
@@ -31,29 +50,57 @@ BIRL
 ```
 
 ### Repetição
-Enquanto a negativa for verdadeira, o treino continua.
+- `NEGATIVA BAMBAM (cond)`: WHILE
+- `MAIS QUERO MAIS (init; cond; inc)`: FOR
+- `SAI FILHO DA PUTA`: BREAK
+- `VAMO MONSTRO`: CONTINUE
+
 ```birl
 NEGATIVA BAMBAM (i < 10)
     i = i + 1;
 BIRL
 ```
 
-## Recursos Exclusivos desta Versão
+### Funções
+- `OH O HOMEM AI PO`: Declaração
+- `AJUDA O MALUCO TA DOENTE`: Chamada
+- `BORA CUMPADE`: Retorno
 
-### Arrays
-Declare listas de exercícios:
 ```birl
-MONSTRO series = [10, 12, 15];
-CE QUER VER ESSA PORRA?(series[0]);
+OH O HOMEM AI PO MONSTRO DOBRO(MONSTRO n)
+    BORA CUMPADE n * 2;
+BIRL
+
+HORA DO SHOW
+    MONSTRO x = AJUDA O MALUCO TA DOENTE DOBRO(7);
+BIRL
 ```
 
-### Ponteiros (Acesso Direto à Memória)
-Aponte para o músculo alvo:
+## Recursos Avançados
+
+### Arrays e Fibras (Dicionários)
+```birl
+MONSTRO series = [10, 12, 15];
+MONSTRO ficha = {"peito": "supino", "series": 4};
+```
+
+### Ponteiros
 ```birl
 MONSTRO biceps = 45;
 MONSTRO p = &biceps;
 CE QUER VER ESSA PORRA?(*p);
 ```
+
+### Concorrência (Go-routines)
+```birl
+BORA DIVIDIR O PESO AJUDA O MALUCO TA DOENTE TREINO_PESADO();
+```
+
+## Suplementação (Builtins)
+- `TAMANHO(obj)`: Retorna o tamanho de um array ou string.
+- `CONVERTE_MONSTRO(str)`: Converte string para inteiro.
+- `IMC(peso, altura)`: Calcula o IMC.
+- `DESCANSO(ms)`: Pausa a execução por N milissegundos.
 
 ## Contribuindo
 Quer ajudar a deixar o BIRL-GO ainda mais pesado? Siga as instruções no [GitHub](https://github.com/gabrielalmir/birl-go).

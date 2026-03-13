@@ -58,9 +58,9 @@ Para rodar um arquivo `.birl`:
 | `NÃO VAI DAR NÃO` | `else` |
 | `NEGATIVA BAMBAM (cond)` | `while` |
 | `MAIS QUERO MAIS (init; cond; inc)`| `for` |
-| `SAI FILHO DA PUTA;` | `break` |
-| `VAMO MONSTRO;` | `continue` |
-| `BORA DIVIDIR O PESO [call];` | `go routine` |
+| `SAI FILHO DA PUTA` | `break` |
+| `VAMO MONSTRO` | `continue` |
+| `BORA DIVIDIR O PESO [call]` | `go routine` |
 
 ### Operadores Lógicos
 - `&&` (AND lógico)
@@ -70,7 +70,7 @@ Para rodar um arquivo `.birl`:
 - **Declaração:** `OH O HOMEM AI PO [tipo] [nome]([params])`
 - **Chamada:** `AJUDA O MALUCO TA DOENTE [nome]([args])`
 - **Retorno:** `BORA CUMPADE [valor];`
-- **Funções Nativas (Builtins):** `TAMANHO(obj)`, `CONVERTE_MONSTRO(str)`, `IMC(peso, altura)`.
+- **Funções Nativas (Builtins):** `TAMANHO(obj)`, `CONVERTE_MONSTRO(str)`, `IMC(peso, altura)`, `DESCANSO(ms)`.
 
 ### Tipos Complexos
 - **Ponteiros:** `&variavel` (endereço) e `*ponteiro` (desreferência)
