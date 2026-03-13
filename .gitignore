@@ -1,0 +1,21 @@
+birl
+birl-server
+birl-go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary
+birl-go/teste.birl
+*.txt
+*.c

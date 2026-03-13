@@ -1,0 +1,4 @@
+HORA DO SHOW
+    MONSTRO a = 10;
+    CE QUER VER ESSA PORRA?(a + b); // b não existe
+BIRL

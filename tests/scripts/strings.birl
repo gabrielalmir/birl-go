@@ -1,0 +1,4 @@
+HORA DO SHOW
+    FRANGO nome = "BAMBAM";
+    CE QUER VER ESSA PORRA?("O " + nome + " TA VINDO!");
+BIRL
