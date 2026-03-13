@@ -38,6 +38,9 @@ func runBIRL(input string, out io.Writer) {
 		return
 	}
 
+	// Debug da AST
+	// fmt.Printf("AST: %s\n", program.String())
+
 	env := object.NewEnvironment()
 	eval := evaluator.New(out)
 	

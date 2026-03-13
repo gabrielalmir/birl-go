@@ -1,0 +1,33 @@
+/* 
+    Treino Completo BIRL-GO
+    Testando For, Break, Continue, Lógica e Builtins
+*/
+HORA DO SHOW
+    // Pegando as medidas
+    MONSTRO medidas = [40, 42, 45];
+    MONSTRO qtd = AJUDA O MALUCO TA DOENTE TAMANHO(medidas);
+    
+    CE QUER VER ESSA PORRA?("Qtd de medidas:");
+    CE QUER VER ESSA PORRA?(qtd);
+
+    // Teste FOR e Lógica
+    MAIS QUERO MAIS (MONSTRO i = 0; i < 10; i = i + 1)
+        ELE QUE A GENTE QUER? (i == 2 || i == 3)
+            CE QUER VER ESSA PORRA?("Pula esse frango");
+            VAMO MONSTRO; // Continue
+        BIRL
+
+        ELE QUE A GENTE QUER? (i == 5 && qtd > 0)
+            CE QUER VER ESSA PORRA?("Fadigou, parando na 5!");
+            SAI FILHO DA PUTA; // Break
+        BIRL
+
+        CE QUER VER ESSA PORRA?(i);
+    BIRL
+
+    // Teste Conversão
+    FRANGO str_peso = "120";
+    MONSTRO int_peso = AJUDA O MALUCO TA DOENTE CONVERTE_MONSTRO(str_peso);
+    CE QUER VER ESSA PORRA?("Peso Convertido:");
+    CE QUER VER ESSA PORRA?(int_peso + 10); // Deve dar 130
+BIRL

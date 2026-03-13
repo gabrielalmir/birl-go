@@ -29,10 +29,13 @@ const (
 	EQ       = "=="
 	NOT_EQ   = "!="
 	AMPERSAND = "&"
+	AND      = "&&"
+	OR       = "||"
 
 	// Delimitadores
 	COMMA     = ","
 	SEMICOLON = ";"
+	COLON     = ":"
 	LPAREN    = "("
 	RPAREN    = ")"
 	LBRACE    = "{"

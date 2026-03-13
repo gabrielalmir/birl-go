@@ -102,7 +102,23 @@ func (l *Lexer) NextToken() Token {
 	case '[':
 		tok = newToken(LBRACKET, l.ch)
 	case '&':
-		tok = newToken(AMPERSAND, l.ch)
+		if l.peekChar() == '&' {
+			ch := l.ch
+			l.readChar()
+			tok = Token{Type: AND, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(AMPERSAND, l.ch)
+		}
+	case '|':
+		if l.peekChar() == '|' {
+			ch := l.ch
+			l.readChar()
+			tok = Token{Type: OR, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(ILLEGAL, l.ch)
+		}
+	case ':':
+		tok = newToken(COLON, l.ch)
 	case '"':
 		tok.Type = STRING
 		tok.Literal = l.readString()
@@ -128,7 +144,34 @@ func (l *Lexer) NextToken() Token {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+	for {
+		if l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+			l.readChar()
+		} else if l.ch == '/' && l.peekChar() == '/' {
+			l.skipSingleLineComment()
+		} else if l.ch == '/' && l.peekChar() == '*' {
+			l.skipMultiLineComment()
+		} else {
+			break
+		}
+	}
+}
+
+func (l *Lexer) skipSingleLineComment() {
+	for l.ch != '\n' && l.ch != 0 {
+		l.readChar()
+	}
+}
+
+func (l *Lexer) skipMultiLineComment() {
+	l.readChar() // Pula o '/'
+	l.readChar() // Pula o '*'
+	for l.ch != 0 {
+		if l.ch == '*' && l.peekChar() == '/' {
+			l.readChar() // Pula o '*'
+			l.readChar() // Pula o '/'
+			break
+		}
 		l.readChar()
 	}
 }

@@ -54,30 +54,42 @@ Para rodar um arquivo `.birl`:
 | `QUE NUM VAI DAR O QUE? (cond)` | `else if` |
 | `NÃO VAI DAR NÃO` | `else` |
 | `NEGATIVA BAMBAM (cond)` | `while` |
+| `MAIS QUERO MAIS (init; cond; inc)`| `for` |
+| `SAI FILHO DA PUTA;` | `break` |
+| `VAMO MONSTRO;` | `continue` |
+
+### Operadores Lógicos
+- `&&` (AND lógico)
+- `||` (OR lógico)
 
 ### Funções
 - **Declaração:** `OH O HOMEM AI PO [tipo] [nome]([params])`
 - **Chamada:** `AJUDA O MALUCO TA DOENTE [nome]([args])`
 - **Retorno:** `BORA CUMPADE [valor];`
+- **Funções Nativas (Builtins):** `TAMANHO(obj)` (retorna len), `CONVERTE_MONSTRO(str)` (converte string pra int).
 
-### Ponteiros e Arrays
-- **Endereço:** `&variavel`
-- **Desreferência:** `*ponteiro`
-- **Arrays:** `MONSTRO lista = [1, 2, 3];`
-- **Acesso:** `lista[0]`
+### Tipos Complexos
+- **Ponteiros:** `&variavel` (endereço) e `*ponteiro` (desreferência)
+- **Arrays:** `MONSTRO lista = [1, 2, 3];` e `lista[0]`
+- **Dicionários (Fibras):** `MONSTRO ficha = {"musculo": "Peito", "series": 4};` e `ficha["musculo"]`
+
+### Comentários
+- `//` para comentários de linha
+- `/* */` para comentários de bloco
 
 ---
 
 ## 🛠️ Exemplos
 
-### 1. Loop Monstro
+### 1. Loop Monstro (FOR e Controle)
 ```birl
 HORA DO SHOW
-    MONSTRO i = 0;
-    NEGATIVA BAMBAM (i < 3)
-        CE QUER VER ESSA PORRA?("CONTANDO...");
+    MAIS QUERO MAIS (MONSTRO i = 0; i < 10; i = i + 1)
+        ELE QUE A GENTE QUER? (i == 5)
+            CE QUER VER ESSA PORRA?("Fadigou, parando na 5!");
+            SAI FILHO DA PUTA; // Break
+        BIRL
         CE QUER VER ESSA PORRA?(i);
-        i = i + 1;
     BIRL
 BIRL
 ```

@@ -70,6 +70,15 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.WhileStatement:
 		return e.evalWhileStatement(node, env)
 
+	case *ast.ForStatement:
+		return e.evalForStatement(node, env)
+
+	case *ast.BreakStatement:
+		return &object.Break{}
+
+	case *ast.ContinueStatement:
+		return &object.Continue{}
+
 	case *ast.ReturnStatement:
 		val := e.Eval(node.ReturnValue, env)
 		if isError(val) {
@@ -103,6 +112,9 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 			return right
 		}
 		return e.evalPrefixExpression(node.Operator, right, env, node.Right)
+
+	case *ast.HashLiteral:
+		return e.evalHashLiteral(node, env)
 
 	case *ast.ArrayLiteral:
 		elements := e.evalExpressions(node.Elements, env)
@@ -164,13 +176,16 @@ func (e *Evaluator) evalExpressions(exps []ast.Expression, env *object.Environme
 }
 
 func (e *Evaluator) applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
-	if !ok {
-		return newError("não é uma função: %s", fn.Type())
+	switch function := fn.(type) {
+	case *object.Function:
+		extendEnv := e.extendFunctionEnv(function, args)
+		evaluated := e.Eval(function.Body, extendEnv)
+		return unwrapReturnValue(evaluated)
+	case *object.Builtin:
+		return function.Fn(args...)
+	default:
+		return newError("NÃO É UMA FUNÇÃO: %s. TA ACHANDO QUE É O QUE?", fn.Type())
 	}
-	extendEnv := e.extendFunctionEnv(function, args)
-	evaluated := e.Eval(function.Body, extendEnv)
-	return unwrapReturnValue(evaluated)
 }
 
 func (e *Evaluator) extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
@@ -215,6 +230,57 @@ func (e *Evaluator) evalIfStatement(is *ast.IfStatement, env *object.Environment
 	return NULL
 }
 
+func (e *Evaluator) evalForStatement(fs *ast.ForStatement, env *object.Environment) object.Object {
+	var result object.Object = NULL
+
+	// O For tem seu próprio escopo
+	forEnv := object.NewEnclosedEnvironment(env)
+
+	if fs.Init != nil {
+		initVal := e.Eval(fs.Init, forEnv)
+		if isError(initVal) {
+			return initVal
+		}
+	}
+
+	for {
+		if fs.Condition != nil {
+			condition := e.Eval(fs.Condition, forEnv)
+			if isError(condition) {
+				return condition
+			}
+			if !isTruthy(condition) {
+				break
+			}
+		}
+
+		result = e.Eval(fs.Body, forEnv)
+		
+		if result != nil {
+			if result.Type() == object.ERROR_OBJ || result.Type() == object.RETURN_VALUE_OBJ {
+				return result
+			}
+			if result.Type() == object.BREAK_OBJ {
+				result = NULL
+				break
+			}
+			if result.Type() == object.CONTINUE_OBJ {
+				// Reseta o result para não vazar e continua
+				result = NULL
+			}
+		}
+
+		if fs.Update != nil {
+			updateVal := e.Eval(fs.Update, forEnv)
+			if isError(updateVal) {
+				return updateVal
+			}
+		}
+	}
+
+	return result
+}
+
 func (e *Evaluator) evalWhileStatement(ws *ast.WhileStatement, env *object.Environment) object.Object {
 	var result object.Object = NULL
 
@@ -229,8 +295,17 @@ func (e *Evaluator) evalWhileStatement(ws *ast.WhileStatement, env *object.Envir
 		}
 
 		result = e.Eval(ws.Body, env)
-		if result != nil && (result.Type() == object.RETURN_VALUE_OBJ || result.Type() == object.ERROR_OBJ) {
-			return result
+		if result != nil {
+			if result.Type() == object.ERROR_OBJ || result.Type() == object.RETURN_VALUE_OBJ {
+				return result
+			}
+			if result.Type() == object.BREAK_OBJ {
+				result = NULL
+				break
+			}
+			if result.Type() == object.CONTINUE_OBJ {
+				result = NULL
+			}
 		}
 	}
 
@@ -275,7 +350,7 @@ func (e *Evaluator) evalBlockStatement(block *ast.BlockStatement, env *object.En
 
 		if result != nil {
 			rt := result.Type()
-			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ || rt == object.BREAK_OBJ || rt == object.CONTINUE_OBJ {
 				return result
 			}
 		}
@@ -288,11 +363,18 @@ func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
+	if builtin, ok := builtins[node.Value]; ok {
+		return builtin
+	}
 	return newError("IDENTIFICADOR NÃO ENCONTRADO: %s. TÁ MALUCO, PO?!", node.Value)
 }
 
 func (e *Evaluator) evalInfixExpression(operator string, left, right object.Object) object.Object {
 	switch {
+	case operator == "&&":
+		return &object.Boolean{Value: isTruthy(left) && isTruthy(right)}
+	case operator == "||":
+		return &object.Boolean{Value: isTruthy(left) || isTruthy(right)}
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return e.evalIntegerInfixExpression(operator, left, right)
 	case operator == "+":
@@ -375,9 +457,53 @@ func (e *Evaluator) evalIndexExpression(left, index object.Object) object.Object
 	switch {
 	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
 		return e.evalArrayIndexExpression(left, index)
+	case left.Type() == object.HASH_OBJ:
+		return e.evalHashIndexExpression(left, index)
 	default:
 		return newError("INDEXADOR NÃO SUPORTADO PARA: %s", left.Type())
 	}
+}
+
+func (e *Evaluator) evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Object {
+	pairs := make(map[object.HashKey]object.HashPair)
+
+	for keyNode, valueNode := range node.Pairs {
+		key := e.Eval(keyNode, env)
+		if isError(key) {
+			return key
+		}
+
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return newError("CHAVE INUTILIZÁVEL COMO ÍNDICE: %s", key.Type())
+		}
+
+		value := e.Eval(valueNode, env)
+		if isError(value) {
+			return value
+		}
+
+		hashed := hashKey.HashKey()
+		pairs[hashed] = object.HashPair{Key: key, Value: value}
+	}
+
+	return &object.Hash{Pairs: pairs}
+}
+
+func (e *Evaluator) evalHashIndexExpression(hash, index object.Object) object.Object {
+	hashObject := hash.(*object.Hash)
+
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return newError("CHAVE INUTILIZÁVEL COMO ÍNDICE: %s", index.Type())
+	}
+
+	pair, ok := hashObject.Pairs[key.HashKey()]
+	if !ok {
+		return NULL
+	}
+
+	return pair.Value
 }
 
 func (e *Evaluator) evalArrayIndexExpression(array, index object.Object) object.Object {

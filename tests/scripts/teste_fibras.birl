@@ -1,0 +1,27 @@
+/* 
+    Treino de Fibras (Dicionários)
+    Montando a ficha completa.
+*/
+HORA DO SHOW
+    // Definindo a Ficha
+    MONSTRO ficha = {
+        "musculo": "Peito",
+        "series": 4,
+        "repeticoes": 12,
+        "ta_pago": 1
+    };
+
+    CE QUER VER ESSA PORRA?("Hoje o treino eh de:");
+    CE QUER VER ESSA PORRA?(ficha["musculo"]);
+
+    CE QUER VER ESSA PORRA?("Series:");
+    CE QUER VER ESSA PORRA?(ficha["series"]);
+
+    // Testando lógica com Fibras
+    ELE QUE A GENTE QUER? (ficha["ta_pago"] == 1)
+        CE QUER VER ESSA PORRA?("O MONSTRO SAIU DA JAULA!");
+    BIRL
+    NÃO VAI DAR NÃO
+        CE QUER VER ESSA PORRA?("BORA TREINAR!");
+    BIRL
+BIRL

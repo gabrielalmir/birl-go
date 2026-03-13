@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"strings"
 	"birl-go/lexer"
 )
 
@@ -18,6 +19,25 @@ type Statement interface {
 type Expression interface {
 	Node
 	expressionNode()
+}
+
+type HashLiteral struct {
+	Token lexer.Token // '{'
+	Pairs map[Expression]Expression
+}
+
+func (hl *HashLiteral) expressionNode()      {}
+func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
+func (hl *HashLiteral) String() string {
+	var out bytes.Buffer
+	pairs := []string{}
+	for key, value := range hl.Pairs {
+		pairs = append(pairs, key.String()+":"+value.String())
+	}
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
+	return out.String()
 }
 
 type Program struct {
@@ -323,6 +343,52 @@ func (ws *WhileStatement) String() string {
 	out.WriteString("BIRL")
 	return out.String()
 }
+
+type ForStatement struct {
+	Token     lexer.Token
+	Init      Statement
+	Condition Expression
+	Update    Statement
+	Body      *BlockStatement
+}
+
+func (fs *ForStatement) statementNode()       {}
+func (fs *ForStatement) TokenLiteral() string { return fs.Token.Literal }
+func (fs *ForStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(fs.TokenLiteral() + " (")
+	if fs.Init != nil {
+		out.WriteString(fs.Init.String())
+	}
+	out.WriteString("; ")
+	if fs.Condition != nil {
+		out.WriteString(fs.Condition.String())
+	}
+	out.WriteString("; ")
+	if fs.Update != nil {
+		out.WriteString(fs.Update.String())
+	}
+	out.WriteString(") ")
+	out.WriteString(fs.Body.String())
+	out.WriteString("BIRL")
+	return out.String()
+}
+
+type BreakStatement struct {
+	Token lexer.Token
+}
+
+func (bs *BreakStatement) statementNode()       {}
+func (bs *BreakStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BreakStatement) String() string       { return bs.TokenLiteral() + ";" }
+
+type ContinueStatement struct {
+	Token lexer.Token
+}
+
+func (cs *ContinueStatement) statementNode()       {}
+func (cs *ContinueStatement) TokenLiteral() string { return cs.Token.Literal }
+func (cs *ContinueStatement) String() string       { return cs.TokenLiteral() + ";" }
 
 type BooleanLiteral struct {
 	Token lexer.Token

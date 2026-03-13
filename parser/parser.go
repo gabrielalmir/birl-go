@@ -57,6 +57,12 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseIfStatement()
 	case lexer.WHILE:
 		return p.parseWhileStatement()
+	case lexer.FOR:
+		return p.parseForStatement()
+	case lexer.BREAK:
+		return p.parseBreakStatement()
+	case lexer.CONTINUE:
+		return p.parseContinueStatement()
 	case lexer.RETURN:
 		return p.parseReturnStatement()
 	case lexer.FUNC:
@@ -140,6 +146,68 @@ func (p *Parser) parseWhileStatement() *ast.WhileStatement {
 	}
 	p.nextToken()
 
+	stmt.Body = p.parseBlockStatement(lexer.END_PROG)
+
+	return stmt
+}
+
+func (p *Parser) parseBreakStatement() *ast.BreakStatement {
+	stmt := &ast.BreakStatement{Token: p.curToken}
+	if p.peekToken.Type == lexer.SEMICOLON {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseContinueStatement() *ast.ContinueStatement {
+	stmt := &ast.ContinueStatement{Token: p.curToken}
+	if p.peekToken.Type == lexer.SEMICOLON {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseForStatement() *ast.ForStatement {
+	stmt := &ast.ForStatement{Token: p.curToken}
+
+	if p.peekToken.Type != lexer.LPAREN {
+		p.peekError(lexer.LPAREN)
+		return nil
+	}
+	p.nextToken()
+	p.nextToken() // Move para o início da Init
+
+	// Parse Init
+	if p.curToken.Type != lexer.SEMICOLON {
+		stmt.Init = p.parseStatement()
+		p.nextToken() // Pula o delimitador do statement para chegar na condição
+	} else {
+		p.nextToken() // Pula o ';' vazio
+	}
+
+	// Parse Condition
+	if p.curToken.Type != lexer.SEMICOLON {
+		stmt.Condition = p.parseExpression(LOWEST)
+		p.nextToken() // Move para o próximo token
+		if p.curToken.Type == lexer.SEMICOLON {
+			p.nextToken() // Pula o ';'
+		}
+	} else {
+		p.nextToken() // Pula o ';' vazio
+	}
+
+	// Parse Update
+	if p.curToken.Type != lexer.RPAREN {
+		stmt.Update = p.parseStatement()
+		p.nextToken() // Move para o RPAREN (espero)
+	}
+
+	if p.curToken.Type != lexer.RPAREN {
+		p.errors = append(p.errors, "ESPERAVA ) NO FINAL DO FOR, FRANGO! RECEBI: "+p.curToken.Literal)
+		return nil
+	}
+	// Não precisamos de nextToken aqui, pois o parseBlockStatement já avança 1 token no início.
+	
 	stmt.Body = p.parseBlockStatement(lexer.END_PROG)
 
 	return stmt
@@ -260,6 +328,9 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 const (
 	_ int = iota
 	LOWEST
+	ASSIGN      // =
+	LOGICAL_OR  // ||
+	LOGICAL_AND // &&
 	EQUALS      // ==
 	LESSGREATER // > or <
 	SUM         // +
@@ -270,6 +341,9 @@ const (
 )
 
 var precedences = map[lexer.TokenType]int{
+	lexer.ASSIGN:   ASSIGN,
+	lexer.OR:       LOGICAL_OR,
+	lexer.AND:      LOGICAL_AND,
 	lexer.EQ:       EQUALS,
 	lexer.NOT_EQ:   EQUALS,
 	lexer.LT:       LESSGREATER,
@@ -302,16 +376,15 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 
-	for p.peekToken.Type != lexer.SEMICOLON && precedence < p.peekPrecedence() {
+	for p.peekToken.Type != lexer.SEMICOLON && p.peekToken.Type != lexer.RPAREN && precedence < p.peekPrecedence() {
 		switch p.peekToken.Type {
-		case lexer.PLUS, lexer.MINUS, lexer.ASTERISK, lexer.SLASH, lexer.EQ, lexer.NOT_EQ, lexer.LT, lexer.GT, lexer.ASSIGN:
+		case lexer.PLUS, lexer.MINUS, lexer.ASTERISK, lexer.SLASH, lexer.EQ, lexer.NOT_EQ, lexer.LT, lexer.GT, lexer.ASSIGN, lexer.AND, lexer.OR:
 			p.nextToken()
 			left = p.parseInfixExpression(left)
 		case lexer.LBRACKET:
 			p.nextToken()
 			left = p.parseIndexExpression(left)
 		case lexer.LPAREN:
-			// Já tratado no parsePrimaryExpression simplificado, mas aqui seria CALL
 			return left
 		default:
 			return left
@@ -396,9 +469,44 @@ func (p *Parser) parsePrimaryExpression() ast.Expression {
 		return p.parseCallExpression()
 	case lexer.LBRACKET:
 		return p.parseArrayLiteral()
+	case lexer.LBRACE:
+		return p.parseHashLiteral()
 	default:
 		return nil
 	}
+}
+
+func (p *Parser) parseHashLiteral() ast.Expression {
+	hash := &ast.HashLiteral{Token: p.curToken}
+	hash.Pairs = make(map[ast.Expression]ast.Expression)
+
+	for p.peekToken.Type != lexer.RBRACE {
+		p.nextToken()
+		key := p.parseExpression(LOWEST)
+
+		if p.peekToken.Type != lexer.COLON {
+			return nil
+		}
+		p.nextToken()
+		p.nextToken()
+
+		value := p.parseExpression(LOWEST)
+		hash.Pairs[key] = value
+
+		if p.peekToken.Type != lexer.RBRACE && p.peekToken.Type != lexer.COMMA {
+			return nil
+		}
+		if p.peekToken.Type == lexer.COMMA {
+			p.nextToken()
+		}
+	}
+
+	if p.peekToken.Type != lexer.RBRACE {
+		return nil
+	}
+	p.nextToken()
+
+	return hash
 }
 
 func (p *Parser) parseArrayLiteral() ast.Expression {
