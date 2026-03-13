@@ -5,6 +5,7 @@ type TokenType string
 type Token struct {
 	Type    TokenType
 	Literal string
+	Line    int
 }
 
 const (
@@ -58,6 +59,7 @@ const (
 	CONTINUE   = "VAMO MONSTRO"
 	FUNC       = "OH O HOMEM AI PO"
 	CALL       = "AJUDA O MALUCO TA DOENTE"
+	GO_ROUTINE = "BORA DIVIDIR O PESO"
 
 	// Tipos
 	TYPE_INT   = "MONSTRO"
@@ -80,6 +82,7 @@ var keywords = map[string]TokenType{
 	"VAMO MONSTRO":            CONTINUE,
 	"OH O HOMEM AI PO":        FUNC,
 	"AJUDA O MALUCO TA DOENTE": CALL,
+	"BORA DIVIDIR O PESO":     GO_ROUTINE,
 	"MONSTRO":                 TYPE_INT,
 	"TRAPÉZIO":                TYPE_FLOAT,
 	"FRANGO":                  TYPE_CHAR,

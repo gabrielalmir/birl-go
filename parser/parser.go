@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"strconv"
 	"birl-go/ast"
 	"birl-go/lexer"
@@ -67,9 +68,31 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case lexer.FUNC:
 		return p.parseExpressionStatement() // Deixa o parseExpression lidar com FUNC
+	case lexer.GO_ROUTINE:
+		return p.parseGoStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
+}
+
+func (p *Parser) parseGoStatement() *ast.GoStatement {
+	stmt := &ast.GoStatement{Token: p.curToken}
+	p.nextToken()
+
+	exp := p.parseExpression(LOWEST)
+	call, ok := exp.(*ast.CallExpression)
+	if !ok {
+		p.errors = append(p.errors, fmt.Sprintf("LINHA %d: BORA DIVIDIR O PESO PRECISA DE UMA CHAMADA DE FUNÇÃO, FRANGO! RECEBI %T", stmt.Token.Line, exp))
+		return nil
+	}
+
+	stmt.Call = call
+
+	if p.peekToken.Type == lexer.SEMICOLON {
+		p.nextToken()
+	}
+
+	return stmt
 }
 
 func (p *Parser) parseIfStatement() *ast.IfStatement {

@@ -86,6 +86,9 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return &object.ReturnValue{Value: val}
 
+	case *ast.GoStatement:
+		return e.evalGoStatement(node, env)
+
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 
@@ -107,14 +110,14 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(right) {
 			return right
 		}
-		return e.evalInfixExpression(node.Operator, left, right)
+		return e.evalInfixExpression(node.Operator, left, right, node.Line())
 
 	case *ast.PrefixExpression:
 		right := e.Eval(node.Right, env)
 		if isError(right) {
 			return right
 		}
-		return e.evalPrefixExpression(node.Operator, right, env, node.Right)
+		return e.evalPrefixExpression(node.Operator, right, env, node.Right, node.Line())
 
 	case *ast.HashLiteral:
 		return e.evalHashLiteral(node, env)
@@ -135,7 +138,7 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(index) {
 			return index
 		}
-		return e.evalIndexExpression(left, index)
+		return e.evalIndexExpression(left, index, node.Line())
 
 	case *ast.AssignmentExpression:
 		val := e.Eval(node.Value, env)
@@ -161,7 +164,7 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}
-		return e.applyFunction(function, args)
+		return e.applyFunction(function, args, node.Line())
 	}
 	return nil
 }
@@ -178,7 +181,7 @@ func (e *Evaluator) evalExpressions(exps []ast.Expression, env *object.Environme
 	return result
 }
 
-func (e *Evaluator) applyFunction(fn object.Object, args []object.Object) object.Object {
+func (e *Evaluator) applyFunction(fn object.Object, args []object.Object, line int) object.Object {
 	switch function := fn.(type) {
 	case *object.Function:
 		extendEnv := e.extendFunctionEnv(function, args)
@@ -187,7 +190,7 @@ func (e *Evaluator) applyFunction(fn object.Object, args []object.Object) object
 	case *object.Builtin:
 		return function.Fn(args...)
 	default:
-		return newError("NÃO É UMA FUNÇÃO: %s. TA ACHANDO QUE É O QUE?", fn.Type())
+		return NewError(line, "NÃO É UMA FUNÇÃO: %s. TA ACHANDO QUE É O QUE?", fn.Type())
 	}
 }
 
@@ -362,6 +365,11 @@ func (e *Evaluator) evalBlockStatement(block *ast.BlockStatement, env *object.En
 	return result
 }
 
+func (e *Evaluator) evalGoStatement(gs *ast.GoStatement, env *object.Environment) object.Object {
+	go e.Eval(gs.Call, env)
+	return NULL
+}
+
 func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	if val, ok := env.Get(node.Value); ok {
 		return val
@@ -369,26 +377,26 @@ func (e *Evaluator) evalIdentifier(node *ast.Identifier, env *object.Environment
 	if builtin, ok := builtins[node.Value]; ok {
 		return builtin
 	}
-	return newError("IDENTIFICADOR NÃO ENCONTRADO: %s. TÁ MALUCO, PO?!", node.Value)
+	return NewError(node.Line(), "IDENTIFICADOR NÃO ENCONTRADO: %s. TÁ MALUCO, PO?!", node.Value)
 }
 
-func (e *Evaluator) evalInfixExpression(operator string, left, right object.Object) object.Object {
+func (e *Evaluator) evalInfixExpression(operator string, left, right object.Object, line int) object.Object {
 	switch {
 	case operator == "&&":
 		return &object.Boolean{Value: isTruthy(left) && isTruthy(right)}
 	case operator == "||":
 		return &object.Boolean{Value: isTruthy(left) || isTruthy(right)}
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
-		return e.evalIntegerInfixExpression(operator, left, right)
+		return e.evalIntegerInfixExpression(operator, left, right, line)
 	case left.Type() == object.FLOAT_OBJ && right.Type() == object.FLOAT_OBJ:
-		return e.evalFloatInfixExpression(operator, left, right)
+		return e.evalFloatInfixExpression(operator, left, right, line)
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ:
 		// Coerção automática de INT para FLOAT
 		l := &object.Float{Value: float64(left.(*object.Integer).Value)}
-		return e.evalFloatInfixExpression(operator, l, right)
+		return e.evalFloatInfixExpression(operator, l, right, line)
 	case left.Type() == object.FLOAT_OBJ && right.Type() == object.INTEGER_OBJ:
 		r := &object.Float{Value: float64(right.(*object.Integer).Value)}
-		return e.evalFloatInfixExpression(operator, left, r)
+		return e.evalFloatInfixExpression(operator, left, r, line)
 	case operator == "+":
 		return &object.String{Value: left.Inspect() + right.Inspect()}
 	case operator == "==":
@@ -396,11 +404,11 @@ func (e *Evaluator) evalInfixExpression(operator string, left, right object.Obje
 	case operator == "!=":
 		return &object.Boolean{Value: left.Inspect() != right.Inspect()}
 	default:
-		return newError("tipo desconhecido: %s %s %s", left.Type(), operator, right.Type())
+		return NewError(line, "tipo desconhecido: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
-func (e *Evaluator) evalFloatInfixExpression(operator string, left, right object.Object) object.Object {
+func (e *Evaluator) evalFloatInfixExpression(operator string, left, right object.Object, line int) object.Object {
 	leftVal := left.(*object.Float).Value
 	rightVal := right.(*object.Float).Value
 
@@ -412,6 +420,9 @@ func (e *Evaluator) evalFloatInfixExpression(operator string, left, right object
 	case "*":
 		return &object.Float{Value: leftVal * rightVal}
 	case "/":
+		if rightVal == 0 {
+			return NewError(line, "DIVISÃO POR ZERO? TA QUERENDO QUEBRAR A JAULA?")
+		}
 		return &object.Float{Value: leftVal / rightVal}
 	case "<":
 		return &object.Boolean{Value: leftVal < rightVal}
@@ -422,11 +433,11 @@ func (e *Evaluator) evalFloatInfixExpression(operator string, left, right object
 	case "!=":
 		return &object.Boolean{Value: leftVal != rightVal}
 	default:
-		return newError("operador desconhecido: %s para FLOAT", operator)
+		return NewError(line, "operador desconhecido: %s para FLOAT", operator)
 	}
 }
 
-func (e *Evaluator) evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+func (e *Evaluator) evalIntegerInfixExpression(operator string, left, right object.Object, line int) object.Object {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 
@@ -438,6 +449,9 @@ func (e *Evaluator) evalIntegerInfixExpression(operator string, left, right obje
 	case "*":
 		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
+		if rightVal == 0 {
+			return NewError(line, "DIVISÃO POR ZERO? TA QUERENDO QUEBRAR A JAULA?")
+		}
 		return &object.Integer{Value: leftVal / rightVal}
 	case "<":
 		return &object.Boolean{Value: leftVal < rightVal}
@@ -448,11 +462,11 @@ func (e *Evaluator) evalIntegerInfixExpression(operator string, left, right obje
 	case "!=":
 		return &object.Boolean{Value: leftVal != rightVal}
 	default:
-		return newError("operador desconhecido: %s", operator)
+		return NewError(line, "operador desconhecido: %s", operator)
 	}
 }
 
-func (e *Evaluator) evalPrefixExpression(operator string, right object.Object, env *object.Environment, node ast.Expression) object.Object {
+func (e *Evaluator) evalPrefixExpression(operator string, right object.Object, env *object.Environment, node ast.Expression, line int) object.Object {
 	switch operator {
 	case "!":
 		return e.evalBangOperatorExpression(right)
@@ -469,9 +483,9 @@ func (e *Evaluator) evalPrefixExpression(operator string, right object.Object, e
 		if ptr, ok := right.(*object.Pointer); ok {
 			return *ptr.Value
 		}
-		return newError("NÃO PODE DESREFERENCIAR ESSA PORRA: %s", right.Type())
+		return NewError(line, "NÃO PODE DESREFERENCIAR ESSA PORRA: %s", right.Type())
 	default:
-		return newError("OPERADOR DESCONHECIDO: %s%s, SEU FRANGO!", operator, right.Type())
+		return NewError(line, "OPERADOR DESCONHECIDO: %s%s, SEU FRANGO!", operator, right.Type())
 	}
 }
 
@@ -491,14 +505,14 @@ func (e *Evaluator) evalBangOperatorExpression(right object.Object) object.Objec
 	}
 }
 
-func (e *Evaluator) evalIndexExpression(left, index object.Object) object.Object {
+func (e *Evaluator) evalIndexExpression(left, index object.Object, line int) object.Object {
 	switch {
 	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
-		return e.evalArrayIndexExpression(left, index)
+		return e.evalArrayIndexExpression(left, index, line)
 	case left.Type() == object.HASH_OBJ:
-		return e.evalHashIndexExpression(left, index)
+		return e.evalHashIndexExpression(left, index, line)
 	default:
-		return newError("INDEXADOR NÃO SUPORTADO PARA: %s", left.Type())
+		return NewError(line, "INDEXADOR NÃO SUPORTADO PARA: %s", left.Type())
 	}
 }
 
@@ -513,7 +527,7 @@ func (e *Evaluator) evalHashLiteral(node *ast.HashLiteral, env *object.Environme
 
 		hashKey, ok := key.(object.Hashable)
 		if !ok {
-			return newError("CHAVE INUTILIZÁVEL COMO ÍNDICE: %s", key.Type())
+			return NewError(node.Line(), "CHAVE INUTILIZÁVEL COMO ÍNDICE: %s", key.Type())
 		}
 
 		value := e.Eval(valueNode, env)
@@ -528,12 +542,12 @@ func (e *Evaluator) evalHashLiteral(node *ast.HashLiteral, env *object.Environme
 	return &object.Hash{Pairs: pairs}
 }
 
-func (e *Evaluator) evalHashIndexExpression(hash, index object.Object) object.Object {
+func (e *Evaluator) evalHashIndexExpression(hash, index object.Object, line int) object.Object {
 	hashObject := hash.(*object.Hash)
 
 	key, ok := index.(object.Hashable)
 	if !ok {
-		return newError("CHAVE INUTILIZÁVEL COMO ÍNDICE: %s", index.Type())
+		return NewError(line, "CHAVE INUTILIZÁVEL COMO ÍNDICE: %s", index.Type())
 	}
 
 	pair, ok := hashObject.Pairs[key.HashKey()]
@@ -544,13 +558,13 @@ func (e *Evaluator) evalHashIndexExpression(hash, index object.Object) object.Ob
 	return pair.Value
 }
 
-func (e *Evaluator) evalArrayIndexExpression(array, index object.Object) object.Object {
+func (e *Evaluator) evalArrayIndexExpression(array, index object.Object, line int) object.Object {
 	arrayObject := array.(*object.Array)
 	idx := index.(*object.Integer).Value
 	max := int64(len(arrayObject.Elements) - 1)
 
 	if idx < 0 || idx > max {
-		return newError("ÍNDICE FORA DA JAULA: %d, MÁXIMO É %d!", idx, max)
+		return NewError(line, "ÍNDICE FORA DA JAULA: %d, MÁXIMO É %d!", idx, max)
 	}
 
 	return arrayObject.Elements[idx]
@@ -563,6 +577,6 @@ func isError(obj object.Object) bool {
 	return false
 }
 
-func newError(format string, a ...interface{}) *object.Error {
-	return &object.Error{Message: fmt.Sprintf(format, a...)}
+func NewError(line int, format string, a ...interface{}) *object.Error {
+	return &object.Error{Message: fmt.Sprintf("LINHA %d: %s", line, fmt.Sprintf(format, a...))}
 }

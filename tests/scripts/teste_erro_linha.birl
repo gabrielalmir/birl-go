@@ -1,0 +1,7 @@
+HORA DO SHOW
+    MONSTRO a = 10;
+    MONSTRO b = 20;
+    
+    // Erro proposital na linha 6
+    CE QUER VER ESSA PORRA?(a + x);
+BIRL

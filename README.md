@@ -12,7 +12,7 @@ Esta implementação suporta a maioria das funcionalidades da especificação or
 - [Go](https://golang.org/dl/) 1.21 ou superior instalado.
 
 ### Instalação
-**Windows:** [Baixar executável (v0.0.3)](https://github.com/gabrielalmir/birl-go/releases/download/v0.0.3/birl-windows-amd64.exe)
+**Windows:** [Baixar executável (v0.0.4)](https://github.com/gabrielalmir/birl-go/releases/download/v0.0.4/birl-windows-amd64.exe)
 
 **Via Código (Linux/macOS):**
 ```bash
@@ -60,6 +60,7 @@ Para rodar um arquivo `.birl`:
 | `MAIS QUERO MAIS (init; cond; inc)`| `for` |
 | `SAI FILHO DA PUTA;` | `break` |
 | `VAMO MONSTRO;` | `continue` |
+| `BORA DIVIDIR O PESO [call];` | `go routine` |
 
 ### Operadores Lógicos
 - `&&` (AND lógico)
