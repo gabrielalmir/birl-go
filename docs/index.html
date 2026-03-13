@@ -36,12 +36,15 @@
     </nav>
 
     <!-- Hero -->
-    <header id="inicio" class="max-w-5xl mx-auto px-6 py-24 text-center">
-        <h1 class="text-white text-6xl md:text-8xl font-black mb-6 tracking-tight italic uppercase text-glow">
+    <header id="inicio" class="relative max-w-5xl mx-auto px-6 py-24 text-center overflow-hidden">
+        <!-- Radial Glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-yellow-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+        
+        <h1 class="relative text-white text-6xl md:text-8xl font-black mb-6 tracking-tight italic uppercase text-glow">
             AQUI NÃO É <span class="birl-gradient bg-clip-text text-transparent">CÓDIGO</span>,<br>
             É <span class="birl-gradient bg-clip-text text-transparent">MÚSCULO</span>!
         </h1>
-        <p class="text-zinc-400 text-xl max-w-2xl mx-auto mb-10">
+        <p class="relative text-zinc-300 text-xl max-w-2xl mx-auto mb-10 font-medium">
             A implementação em Go da linguagem BIRL. Performance bruta, tipagem monstra e sem sedentarismo digital.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
