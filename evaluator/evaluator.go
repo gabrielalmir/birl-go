@@ -89,6 +89,9 @@ func (e *Evaluator) Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 
+	case *ast.FloatLiteral:
+		return &object.Float{Value: node.Value}
+
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
 
@@ -377,6 +380,15 @@ func (e *Evaluator) evalInfixExpression(operator string, left, right object.Obje
 		return &object.Boolean{Value: isTruthy(left) || isTruthy(right)}
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return e.evalIntegerInfixExpression(operator, left, right)
+	case left.Type() == object.FLOAT_OBJ && right.Type() == object.FLOAT_OBJ:
+		return e.evalFloatInfixExpression(operator, left, right)
+	case left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ:
+		// Coerção automática de INT para FLOAT
+		l := &object.Float{Value: float64(left.(*object.Integer).Value)}
+		return e.evalFloatInfixExpression(operator, l, right)
+	case left.Type() == object.FLOAT_OBJ && right.Type() == object.INTEGER_OBJ:
+		r := &object.Float{Value: float64(right.(*object.Integer).Value)}
+		return e.evalFloatInfixExpression(operator, left, r)
 	case operator == "+":
 		return &object.String{Value: left.Inspect() + right.Inspect()}
 	case operator == "==":
@@ -385,6 +397,32 @@ func (e *Evaluator) evalInfixExpression(operator string, left, right object.Obje
 		return &object.Boolean{Value: left.Inspect() != right.Inspect()}
 	default:
 		return newError("tipo desconhecido: %s %s %s", left.Type(), operator, right.Type())
+	}
+}
+
+func (e *Evaluator) evalFloatInfixExpression(operator string, left, right object.Object) object.Object {
+	leftVal := left.(*object.Float).Value
+	rightVal := right.(*object.Float).Value
+
+	switch operator {
+	case "+":
+		return &object.Float{Value: leftVal + rightVal}
+	case "-":
+		return &object.Float{Value: leftVal - rightVal}
+	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+	case "/":
+		return &object.Float{Value: leftVal / rightVal}
+	case "<":
+		return &object.Boolean{Value: leftVal < rightVal}
+	case ">":
+		return &object.Boolean{Value: leftVal > rightVal}
+	case "==":
+		return &object.Boolean{Value: leftVal == rightVal}
+	case "!=":
+		return &object.Boolean{Value: leftVal != rightVal}
+	default:
+		return newError("operador desconhecido: %s para FLOAT", operator)
 	}
 }
 

@@ -12,7 +12,7 @@ Esta implementação suporta a maioria das funcionalidades da especificação or
 - [Go](https://golang.org/dl/) 1.21 ou superior instalado.
 
 ### Instalação
-**Windows:** [Baixar executável (v0.0.2)](https://github.com/gabrielalmir/birl-go/releases/download/v0.0.2/birl-windows-amd64.exe)
+**Windows:** [Baixar executável (v0.0.3)](https://github.com/gabrielalmir/birl-go/releases/download/v0.0.3/birl-windows-amd64.exe)
 
 **Via Código (Linux/macOS):**
 ```bash
@@ -69,7 +69,7 @@ Para rodar um arquivo `.birl`:
 - **Declaração:** `OH O HOMEM AI PO [tipo] [nome]([params])`
 - **Chamada:** `AJUDA O MALUCO TA DOENTE [nome]([args])`
 - **Retorno:** `BORA CUMPADE [valor];`
-- **Funções Nativas (Builtins):** `TAMANHO(obj)` (retorna len), `CONVERTE_MONSTRO(str)` (converte string pra int).
+- **Funções Nativas (Builtins):** `TAMANHO(obj)`, `CONVERTE_MONSTRO(str)`, `IMC(peso, altura)`.
 
 ### Tipos Complexos
 - **Ponteiros:** `&variavel` (endereço) e `*ponteiro` (desreferência)

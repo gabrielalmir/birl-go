@@ -40,4 +40,43 @@ var builtins = map[string]*object.Builtin{
 			}
 		},
 	},
+	"IMC": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 2 {
+				return newError("IMC ESPERAVA 2 ARGUMENTOS (PESO, ALTURA), FRANGO. RECEBEU %d", len(args))
+			}
+
+			var peso, altura float64
+
+			// Helper para extrair número de Int ou Float
+			extract := func(obj object.Object) (float64, bool) {
+				switch v := obj.(type) {
+				case *object.Integer:
+					return float64(v.Value), true
+				case *object.Float:
+					return v.Value, true
+				case *object.String:
+					if f, err := strconv.ParseFloat(v.Value, 64); err == nil {
+						return f, true
+					}
+				}
+				return 0, false
+			}
+
+			var ok bool
+			if peso, ok = extract(args[0]); !ok {
+				return newError("PESO INVÁLIDO OU NÃO NUMÉRICO, TIPO %s", args[0].Type())
+			}
+			if altura, ok = extract(args[1]); !ok {
+				return newError("ALTURA INVÁLIDA OU NÃO NUMÉRICA, TIPO %s", args[1].Type())
+			}
+
+			if altura == 0 {
+				return newError("DIVISÃO POR ZERO? TA QUERENDO QUEBRAR A JAULA?")
+			}
+
+			resultado := peso / (altura * altura)
+			return &object.Float{Value: resultado}
+		},
+	},
 }

@@ -1,0 +1,13 @@
+HORA DO SHOW
+    MONSTRO peso = 100;
+    TRAPÉZIO altura = 1.85;
+    
+    FRANGO resultado = AJUDA O MALUCO TA DOENTE IMC(peso, altura);
+    
+    CE QUER VER ESSA PORRA?("Calculando IMC para peso 100kg e altura 1.85m...");
+    CE QUER VER ESSA PORRA?("Seu IMC eh:");
+    CE QUER VER ESSA PORRA?(resultado);
+    
+    CE QUER VER ESSA PORRA?("Comparando com valor fixo:");
+    CE QUER VER ESSA PORRA?(AJUDA O MALUCO TA DOENTE IMC(80, 1.80));
+BIRL

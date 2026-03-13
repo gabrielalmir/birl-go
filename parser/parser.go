@@ -461,6 +461,9 @@ func (p *Parser) parsePrimaryExpression() ast.Expression {
 	case lexer.INT:
 		val, _ := strconv.ParseInt(p.curToken.Literal, 0, 64)
 		return &ast.IntegerLiteral{Token: p.curToken, Value: val}
+	case lexer.FLOAT:
+		val, _ := strconv.ParseFloat(p.curToken.Literal, 64)
+		return &ast.FloatLiteral{Token: p.curToken, Value: val}
 	case lexer.STRING:
 		return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 	case lexer.FUNC:
