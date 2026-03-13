@@ -32,7 +32,7 @@ Certifique-se de ter o [Go](https://golang.org/dl/) instalado em sua máquina.
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/seu-usuario/birl-go.git
+   git clone https://github.com/gabrielalmir/birl-go.git
    cd birl-go
    ```
 
@@ -67,7 +67,7 @@ BIRL
 
 ## 🚧 Status do Desenvolvimento
 
-Este projeto agora suporta as principais características da [especificação oficial do BIRL](https://birl-language.github.io/). 
+Este projeto agora suporta as principais características da [especificação oficial do BIRL](https://birl-language.github.io/).
 
 **Próximos passos:**
 - [ ] Implementar `QUE NUM VAI DAR O QUE?` (else if).
