@@ -2,71 +2,111 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*' # Trigger on tags starting with v (e.g. v1.0.0)
+    tags: ['v*']
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build and Release
+    name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, windows]
-        goarch: [amd64, arm64]
-        exclude:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
           - goos: windows
-            goarch: arm64 # Exclui windows arm64 por enquanto, a menos que queira suportar
-
+            goarch: amd64
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
+          cache: true
 
-      - name: Build binary
+      - name: Test
+        run: go test ./...
+
+      - name: Build reproducible binary
+        shell: bash
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
         run: |
-          BINARY_NAME=birl
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            BINARY_NAME="${BINARY_NAME}.exe"
-          fi
-          OUTPUT_NAME="birl-${{ matrix.goos }}-${{ matrix.goarch }}"
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            OUTPUT_NAME="${OUTPUT_NAME}.exe"
-          fi
-          go build -o "bin/${OUTPUT_NAME}" main.go
+          suffix=""
+          if [ "$GOOS" = windows ]; then suffix=".exe"; fi
+          mkdir -p dist
+          go build -trimpath -buildvcs=true \
+            -ldflags="-s -w" \
+            -o "dist/birl-${GOOS}-${GOARCH}${suffix}" .
 
-      - name: Upload artifacts
+      - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: bin/*
+          name: release-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*
+          if-no-files-found: error
 
   release:
-    name: Create GitHub Release
+    name: Scan, sign and release
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download all artifacts
+      - name: Download binaries
         uses: actions/download-artifact@v4
         with:
-          path: bin
+          pattern: release-*
+          path: dist
           merge-multiple: true
 
-      - name: Create Release
+      - name: Detect prompt-injection content
+        run: python3 scripts/security/scan_prompt_injection.py .
+
+      - name: Install and update ClamAV
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y clamav
+          # The package starts freshclam in the background. Stop it before the
+          # explicit update so both processes do not contend for its log lock.
+          sudo systemctl stop clamav-freshclam.service
+          sudo freshclam --stdout
+
+      - name: Scan release inputs for malware
+        run: clamscan --recursive --infected --fail-if-cvd-older-than=7 .
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.10.0
+
+      - name: Sign binaries with keyless OIDC identity
+        shell: bash
+        run: |
+          for binary in dist/*; do
+            cosign sign-blob --yes \
+              --bundle "${binary}.sigstore.json" \
+              "$binary"
+          done
+
+      - name: Generate SHA-256 checksums
+        working-directory: dist
+        run: sha256sum birl-* > SHA256SUMS
+
+      - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: bin/*
+          files: dist/*
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

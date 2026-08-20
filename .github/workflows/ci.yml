@@ -2,13 +2,70 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
+
+permissions:
+  contents: read
 
 jobs:
-  test:
-    name: Run Tests
+  test-and-build:
+    name: Test and build (${{ matrix.goos }}/${{ matrix.goarch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests
+        run: go test -race ./...
+        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
+
+      - name: Run static analysis
+        run: go vet ./...
+        if: matrix.goos == 'linux' && matrix.goarch == 'amd64'
+
+      - name: Build binary
+        shell: bash
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          suffix=""
+          if [ "$GOOS" = windows ]; then suffix=".exe"; fi
+          mkdir -p dist
+          go build -trimpath -buildvcs=true \
+            -ldflags="-s -w" \
+            -o "dist/birl-${GOOS}-${GOARCH}${suffix}" .
+
+      - name: Upload binary for security scan
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-binary-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 1
+
+  security:
+    name: Security gates
+    needs: test-and-build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,10 +74,32 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.26'
+          go-version-file: go.mod
+          cache: true
 
-      - name: Install dependencies
-        run: go mod download
+      - name: Check Go dependencies for known vulnerabilities
+        uses: golang/govulncheck-action@v1
+        with:
+          go-package: ./...
 
-      - name: Run tests
-        run: go test ./...
+      - name: Detect prompt-injection content
+        run: python3 scripts/security/scan_prompt_injection.py .
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ci-binary-*
+          path: dist
+          merge-multiple: true
+
+      - name: Install and update ClamAV
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y clamav
+          # The package starts freshclam in the background. Stop it before the
+          # explicit update so both processes do not contend for its log lock.
+          sudo systemctl stop clamav-freshclam.service
+          sudo freshclam --stdout
+
+      - name: Scan source and binaries for malware
+        run: clamscan --recursive --infected --fail-if-cvd-older-than=7 .

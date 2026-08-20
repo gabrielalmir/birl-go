@@ -19,3 +19,11 @@ birl-go
 birl-go/teste.birl
 *.txt
 *.c
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local build and release artifacts
+bin/
+dist/
