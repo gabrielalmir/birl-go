@@ -81,7 +81,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y clamav
-          sudo freshclam
+          # The package starts freshclam in the background. Stop it before the
+          # explicit update so both processes do not contend for its log lock.
+          sudo systemctl stop clamav-freshclam.service
+          sudo freshclam --stdout
 
       - name: Scan release inputs for malware
         run: clamscan --recursive --infected --fail-if-cvd-older-than=7 .
