@@ -131,5 +131,30 @@ A documentação detalhada está disponível em: [https://gabrielalmir.github.io
 4. Push para a Branch (`git push origin feature/TreinoPesado`)
 5. Abra um Pull Request
 
+## 🔐 Segurança dos artefatos
+
+O CI testa e compila todas as plataformas suportadas, executa `go vet` e
+`govulncheck`, procura conteúdo de prompt injection nos arquivos textuais e usa
+ClamAV para verificar o código e os binários contra malware. Uma correspondência
+em qualquer verificação bloqueia a entrega.
+
+Em tags `v*`, cada binário é assinado sem chave pelo Cosign usando a identidade
+OIDC do GitHub Actions. A release contém o binário, um bundle
+`.sigstore.json` (assinatura, certificado e prova de transparência) e o arquivo
+`SHA256SUMS`. Para verificar, instale o Cosign e execute, substituindo a tag:
+
+```bash
+cosign verify-blob birl-linux-amd64 \
+  --bundle birl-linux-amd64.sigstore.json \
+  --certificate-identity-regexp='https://github.com/gabrielalmir/birl-go/.github/workflows/release.yml@refs/tags/v.*' \
+  --certificate-oidc-issuer='https://token.actions.githubusercontent.com'
+sha256sum --check SHA256SUMS
+```
+
+O detector de prompt injection é uma barreira defensiva baseada em padrões; ele
+não substitui revisão humana de mudanças que adicionem prompts ou dados não
+confiáveis. Execute-o localmente com
+`python3 scripts/security/scan_prompt_injection.py .`.
+
 ---
 *"É 13 PORRA! SAÍ DAQUI QUE É HORA DO SHOW!"* 🦍
