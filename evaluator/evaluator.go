@@ -1,11 +1,11 @@
 package evaluator
 
 import (
-	"io"
-	"fmt"
-	"strconv"
 	"birl-go/ast"
 	"birl-go/object"
+	"fmt"
+	"io"
+	"strconv"
 )
 
 var (
@@ -184,6 +184,9 @@ func (e *Evaluator) evalExpressions(exps []ast.Expression, env *object.Environme
 func (e *Evaluator) applyFunction(fn object.Object, args []object.Object, line int) object.Object {
 	switch function := fn.(type) {
 	case *object.Function:
+		if len(args) != len(function.Parameters) {
+			return NewError(line, "FUNÇÃO ESPERAVA %d ARGUMENTO(S), MAS RECEBEU %d", len(function.Parameters), len(args))
+		}
 		extendEnv := e.extendFunctionEnv(function, args)
 		evaluated := e.Eval(function.Body, extendEnv)
 		return unwrapReturnValue(evaluated)
@@ -261,7 +264,7 @@ func (e *Evaluator) evalForStatement(fs *ast.ForStatement, env *object.Environme
 		}
 
 		result = e.Eval(fs.Body, forEnv)
-		
+
 		if result != nil {
 			if result.Type() == object.ERROR_OBJ || result.Type() == object.RETURN_VALUE_OBJ {
 				return result
