@@ -134,9 +134,13 @@ A documentação detalhada está disponível em: [https://gabrielalmir.github.io
 ## 🔐 Segurança dos artefatos
 
 O CI testa e compila todas as plataformas suportadas, executa `go vet` e
-`govulncheck`, procura conteúdo de prompt injection nos arquivos textuais e usa
-ClamAV para verificar o código e os binários contra malware. Uma correspondência
-em qualquer verificação bloqueia a entrega.
+`govulncheck` e submete o repositório ao
+[AI Jail](https://github.com/akitaonrails/ai-jail). A defesa em profundidade
+também procura conteúdo de prompt injection nos arquivos textuais e usa ClamAV
+para verificar o código e os binários contra malware. Uma correspondência em
+qualquer verificação bloqueia a entrega. O mesmo conjunto de verificações roda
+novamente sobre os arquivos de entrada antes de uma release ser assinada e
+publicada.
 
 Em tags `v*`, cada binário é assinado sem chave pelo Cosign usando a identidade
 OIDC do GitHub Actions. A release contém o binário, um bundle

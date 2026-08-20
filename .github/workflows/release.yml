@@ -74,6 +74,9 @@ jobs:
           path: dist
           merge-multiple: true
 
+      - name: Audit release inputs with AI Jail
+        uses: akitaonrails/ai-jail@main
+
       - name: Detect prompt-injection content
         run: python3 scripts/security/scan_prompt_injection.py .
 
