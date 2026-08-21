@@ -50,9 +50,13 @@ jobs:
         run: |
           suffix=""
           if [ "$GOOS" = windows ]; then suffix=".exe"; fi
+          # Match the release build: retain symbols in Windows PE files to make
+          # them easier for users and antivirus engines to inspect.
+          ldflags="-s -w"
+          if [ "$GOOS" = windows ]; then ldflags=""; fi
           mkdir -p dist
           go build -trimpath -buildvcs=true \
-            -ldflags="-s -w" \
+            -ldflags="$ldflags" \
             -o "dist/birl-${GOOS}-${GOARCH}${suffix}" .
 
       - name: Upload binary for security scan

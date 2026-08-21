@@ -151,6 +151,27 @@ cosign verify-blob birl-linux-amd64 \
 sha256sum --check SHA256SUMS
 ```
 
+No Windows, confira primeiro se o hash exibido pelo PowerShell é exatamente o
+mesmo publicado em `SHA256SUMS`:
+
+```powershell
+Get-FileHash .\birl-windows-amd64.exe -Algorithm SHA256
+cosign verify-blob .\birl-windows-amd64.exe `
+  --bundle .\birl-windows-amd64.exe.sigstore.json `
+  --certificate-identity-regexp='https://github.com/gabrielalmir/birl-go/.github/workflows/release.yml@refs/tags/v.*' `
+  --certificate-oidc-issuer='https://token.actions.githubusercontent.com'
+```
+
+O alerta genérico `Trojan:Win32/Wacatac.B!ml` indica uma classificação
+heurística, não identifica por si só uma família de malware. Os executáveis
+Windows das novas releases mantêm as tabelas de símbolos e depuração do Go
+para facilitar a inspeção por ferramentas de segurança e reduzir falsos
+positivos. A assinatura Cosign comprova a origem e a integridade do arquivo, mas
+não é uma assinatura Authenticode e, portanto, não impede sozinha um alerta do
+Microsoft Defender. Não execute o arquivo se o hash ou a assinatura não forem
+válidos; reporte um arquivo válido detectado à Microsoft como possível falso
+positivo e informe a URL da release no relatório.
+
 O detector de prompt injection é uma barreira defensiva baseada em padrões; ele
 não substitui revisão humana de mudanças que adicionem prompts ou dados não
 confiáveis. Execute-o localmente com
