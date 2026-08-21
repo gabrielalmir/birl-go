@@ -44,9 +44,14 @@ jobs:
         run: |
           suffix=""
           if [ "$GOOS" = windows ]; then suffix=".exe"; fi
+          # Keep Go's symbol and DWARF tables in the Windows executable. Besides
+          # making crash reports useful, avoiding an opaque/stripped PE reduces
+          # false positives from reputation and ML-based antivirus heuristics.
+          ldflags="-s -w"
+          if [ "$GOOS" = windows ]; then ldflags=""; fi
           mkdir -p dist
           go build -trimpath -buildvcs=true \
-            -ldflags="-s -w" \
+            -ldflags="$ldflags" \
             -o "dist/birl-${GOOS}-${GOARCH}${suffix}" .
 
       - name: Upload binary
